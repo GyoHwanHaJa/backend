@@ -1,5 +1,6 @@
 package com.exchangeBE.exchange;
 
+import com.exchangeBE.exchange.service.ExchangeApplication;
 import org.springframework.boot.SpringApplication;
 
 public class TestExchangeApplication {
