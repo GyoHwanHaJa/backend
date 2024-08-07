@@ -56,7 +56,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           source: "docker-compose.yml"
-          target: "/home/ubuntu/realtimetrip/"
+          target: "/home/ubuntu/gyohwanhaja/"
 
       # EC2 인스턴스 접속 및 애플리케이션 실행
       - name: Deploy to EC2 and setup environment
@@ -70,10 +70,10 @@ jobs:
             sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
             
-            cd /home/ubuntu/realtimetrip
+            cd /home/ubuntu/gyohwanhaja
             
-            # application.yml 작성
-            echo "${{ secrets.APPLICATION }}" > application.yml
+            # application.properties 작성
+            echo "${{ secrets.APPLICATION }}" > application.properties
             
              # Docker Hub에 로그인
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
