@@ -1,2 +1,3 @@
 *.properties
 application.yml
+.gradle
