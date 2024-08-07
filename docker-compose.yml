@@ -1,0 +1,6 @@
+version: '3'
+services:
+  app:
+    image: "${DOCKERHUB_USERNAME}/gyohwanhaja:latest"
+    ports:
+      - "8080:8080"
