@@ -1,3 +1,4 @@
 *.properties
 application.yml
 .gradle
+.idea
