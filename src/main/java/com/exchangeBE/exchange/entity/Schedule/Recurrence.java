@@ -1,4 +1,5 @@
-package com.exchangeBE.exchange.Schedule;
+package com.exchangeBE.exchange.entity.Schedule;
+
 
 import com.exchangeBE.exchange.dto.RecurrenceDto;
 import jakarta.persistence.*;

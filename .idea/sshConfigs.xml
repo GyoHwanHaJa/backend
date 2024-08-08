@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="ec2-3-36-145-58.ap-northeast-2.compute.amazonaws.com" id="bf6d92ac-60a7-4665-8625-5819c2d41b1b" keyPath="C:\Users\awdfg\Downloads\exchange.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" useOpenSSHConfig="true" />
+    </configs>
+  </component>
+</project>

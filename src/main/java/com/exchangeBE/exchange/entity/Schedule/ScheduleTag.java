@@ -1,4 +1,4 @@
-package com.exchangeBE.exchange.Schedule;
+package com.exchangeBE.exchange.entity.Schedule;
 
 import jakarta.persistence.*;
 import lombok.Getter;
