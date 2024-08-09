@@ -1,9 +1,8 @@
 package com.exchangeBE.exchange.entity.Schedule;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Occassion {
@@ -11,7 +10,9 @@ public class Occassion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
-    //@JoinColumn(name = "id")
-    //private Long scheduleId;
+    @ManyToOne
+    @JoinColumn(name = "recurrence_id", nullable = false)
+    private Recurrence recurrence; // 여기
+
+    private LocalDateTime time;
 }

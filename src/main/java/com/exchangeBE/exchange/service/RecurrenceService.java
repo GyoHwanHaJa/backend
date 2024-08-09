@@ -17,6 +17,7 @@ public class RecurrenceService {
         Recurrence recurrence = Recurrence.toRecurrenceEntity(recurrenceDto);
         recurrence = recurrenceRepository.save(recurrence);
 
+
         return RecurrenceDto.toRecurrenceDto(recurrence);
     }
 }
