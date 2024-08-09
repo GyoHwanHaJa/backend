@@ -1,34 +1,48 @@
-package com.exchangeBE.exchange.dto;
+package com.exchangeBE.exchange.entity;
 
-import com.exchangeBE.exchange.entity.TopicEntity;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
-public class TripPostDto {
+@Entity
+public class TripPostEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
     private String description;
+
+    @Temporal(TemporalType.DATE)
     private LocalDate startDate;
+
+    @Temporal(TemporalType.DATE)
     private LocalDate endDate;
+
+    @ElementCollection
     private List<String> photos;
+
+    @ManyToOne
+    @JoinColumn(name = "topic_id")
     private TopicEntity topic;
 
-    // 기본 생성자 (no-args constructor)
-    public TripPostDto() {}
+    // 기본 생성자
+    public TripPostEntity() {
+    }
 
-    // 모든 필드를 포함한 생성자 (MainServiceTest에 필요한 생성자)
-    public TripPostDto(Long id, String title, String description, LocalDate startDate, LocalDate endDate, List<String> photos, TopicEntity topic) {
+    // 모든 필드를 초기화하는 생성자
+    public TripPostEntity(Long id, String title, String description, LocalDate startDate, LocalDate endDate, List<String> photos) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.photos = photos;
-        this.topic = topic;
     }
 
-    // Getters and Setters
+    // Getter 및 Setter 메서드 추가
     public Long getId() {
         return id;
     }

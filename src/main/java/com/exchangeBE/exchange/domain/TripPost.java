@@ -1,35 +1,69 @@
 package com.exchangeBE.exchange.domain;
 
-import jakarta.persistence.*;
-import org.apache.catalina.User;
-
-import java.util.Date;
-import java.util.List;
-
-@Entity
 public class TripPost {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 게시물의 고유 ID
+    private Long id;
+    private String title;
+    private String description;
+    private String location;
+    private String startDate;
+    private String endDate;
+    private String photos; // 단일 사진 파일 경로 또는 URL
 
-    private String title; // 게시물의 제목
-    private String content; // 게시물의 내용
+    // Getter 및 Setter
+    public Long getId() {
+        return id;
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user; // 게시물 작성자
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt; // 게시물 작성 날짜
+    public String getTitle() {
+        return title;
+    }
 
-    @ManyToMany
-    @JoinTable(
-            name = "trippost_tag",
-            joinColumns = @JoinColumn(name = "trippost_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private List<Tag> tags; // 게시물에 관련된 태그 목록
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    // Getters and Setters
-    // 각 필드에 대한 getter와 setter 메서드를 정의합니다.
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(String photos) {
+        this.photos = photos;
+    }
 }

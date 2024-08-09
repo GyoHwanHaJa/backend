@@ -1,33 +1,35 @@
 package com.exchangeBE.exchange.domain;
 
-import jakarta.persistence.*;
-import org.apache.catalina.User;
-
 import java.util.List;
 
-@Entity
 public class Tag {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-    private String type;
+    private List<TripPost> tripPosts; // TripPost 도메인 클래스와의 연관 관계
 
-    @ManyToMany(mappedBy = "tags")
-    private List<TripPost> tripPosts;
-    private User user;
-
-    public User getUser() {
-        this.user = user;
-        return null;
+    // Getter 및 Setter
+    public Long getId() {
+        return id;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setId(Long id) {
+        this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
 
-    // Getters and Setters
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<TripPost> getTripPosts() {
+        return tripPosts;
+    }
+
+    public void setTripPosts(List<TripPost> tripPosts) {
+        this.tripPosts = tripPosts;
+    }
 }

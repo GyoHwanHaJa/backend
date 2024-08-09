@@ -1,7 +1,7 @@
 package com.exchangeBE.exchange.controller;
 
-import com.exchangeBE.exchange.domain.TripPost;
 import com.exchangeBE.exchange.dto.TripPostDto;
+import com.exchangeBE.exchange.entity.TripPostEntity;
 import com.exchangeBE.exchange.service.TripPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +16,13 @@ public class TripPostController {
     private TripPostService tripPostService;
 
     @GetMapping
-    public List<TripPost> getAllTrips() {
+    public List<TripPostDto> getAllTrips() {
         return tripPostService.findAllTrips();
     }
 
     @PostMapping
-    public TripPost createTrip(@RequestBody TripPostDto tripPostDto) {
-        TripPost tripPost = tripPostService.convertToEntity(tripPostDto);
-        return tripPostService.saveTrip(tripPost);
+    public TripPostDto createTrip(@RequestBody TripPostDto tripPostDto) {
+        TripPostEntity tripPostEntity = tripPostService.convertToEntity(tripPostDto);
+        return tripPostService.saveTrip(tripPostEntity);
     }
 }
