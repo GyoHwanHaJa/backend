@@ -7,6 +7,8 @@ import com.exchangeBE.exchange.dto.TagDto;
 import com.exchangeBE.exchange.service.ScheduleService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("/schedules")
 public class ScheduleController {
@@ -23,11 +25,11 @@ public class ScheduleController {
 
     @PostMapping("/{userId}")
     @ResponseBody
-    public ScheduleDto createSchedule(@PathVariable Long userId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
+    public Set<TagDto> createSchedule(@PathVariable Long userId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
 
         ScheduleDto scheduleDto = scheduleRequestDto.getScheduleDto();
         RecurrenceDto recurrenceDto = scheduleRequestDto.getRecurrenceDto();
-        TagDto tagDto = scheduleRequestDto.getTagDto();
+        Set<TagDto> tagDto = scheduleRequestDto.getTagDto();
 
         return scheduleService.createSchedule(userId, scheduleDto, recurrenceDto, tagDto);
     }

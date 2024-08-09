@@ -4,10 +4,14 @@ import com.exchangeBE.exchange.dto.RecurrenceDto;
 import com.exchangeBE.exchange.dto.ScheduleDto;
 import com.exchangeBE.exchange.dto.TagDto;
 import com.exchangeBE.exchange.entity.Schedule.Schedule;
-import com.exchangeBE.exchange.entity.Schedule.Users;
+import com.exchangeBE.exchange.entity.Schedule.ScheduleTag;
+import com.exchangeBE.exchange.entity.Schedule.User;
 import com.exchangeBE.exchange.repository.ScheduleRepository;
 import com.exchangeBE.exchange.repository.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class ScheduleService {
@@ -26,23 +30,31 @@ public class ScheduleService {
         this.recurrenceService = recurrenceService;
     }
 
-    public ScheduleDto createSchedule(Long userId, ScheduleDto scheduleDto,
-                                      RecurrenceDto recurrenceDto, TagDto tagDto) {
-
-        Users user = userRepository.findById(userId).get();
-
+    public Set<TagDto> createSchedule(Long userId, ScheduleDto scheduleDto,
+                                      RecurrenceDto recurrenceDto, Set<TagDto> tagDto) {
+        // 받아온 id를 기반으로 유저 검색
+        User user = userRepository.findById(userId).get();
+        // 특정 유저의 일정으로 설정
         scheduleDto.setUser(user);
 
-
-        tagDto = TagDto.toTagDto(tagService.createTag(tagDto));
-
         recurrenceDto = recurrenceService.createRecurrence(recurrenceDto);
-        scheduleDto.setRecurrence_id(recurrenceDto.getId());
+
+        // 스케줄에 태그와
+
+        scheduleDto.setRecurrenceDto(recurrenceDto);
+
+        // schedule dto 저장
         scheduleDto = ScheduleDto.toScheduleDto(scheduleRepository.save(Schedule.toScheduleEntity(scheduleDto)));
 
-        scheduleTagService.createScheduleTag(scheduleDto, tagDto);
 
-        return scheduleDto;
+        // 태그 생성 -> 일정 엔티티와 의존성 X
+
+        for(TagDto tag : tagDto) {
+            tag = tagService.createTag(tag); // 태그 레코드 생성
+            scheduleTagService.createScheduleTag(scheduleDto, tag); // 일정-태그 조인 테이블 레코드 생성
+        }
+
+        return tagDto;
     }
 
     public void readSchedule(ScheduleDto scheduleDto) {

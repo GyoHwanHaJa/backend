@@ -18,7 +18,7 @@ public class Schedule {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private Users user;
+    private User user;
 
     private String scheduleName;
     private String scheduleDescription;
@@ -28,7 +28,7 @@ public class Schedule {
     @OneToMany(mappedBy = "schedule")
     private Set<ScheduleTag> scheduleTags;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "recurrence_id", referencedColumnName = "id")
     private Recurrence recurrence;
 
@@ -41,6 +41,8 @@ public class Schedule {
         schedule.setScheduleDescription(scheduleDto.getScheduleDescription());
         schedule.setStartTime(scheduleDto.getStartTime());
         schedule.setEndTime(scheduleDto.getEndTime());
+        schedule.setRecurrence(Recurrence.toRecurrenceEntity(scheduleDto.getRecurrenceDto()));
+        schedule.setScheduleTags(scheduleDto.getScheduleTags());
 
         return schedule;
     }

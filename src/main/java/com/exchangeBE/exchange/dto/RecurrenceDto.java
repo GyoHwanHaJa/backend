@@ -19,13 +19,13 @@ public class RecurrenceDto {
     private Integer RecurrenceInterval;
 
     public static RecurrenceDto toRecurrenceDto(Recurrence recurrence) {
-        RecurrenceDto dto = new RecurrenceDto();
+        RecurrenceDto recurrenceDto = new RecurrenceDto();
 
-        dto.setId(recurrence.getId());
-        dto.setType(recurrence.getType());
-        dto.setDaysOfWeek(recurrence.getDaysOfWeek());
-        dto.setRecurrenceInterval(recurrence.getRecurrenceInterval());
+        recurrenceDto.setId(recurrence.getId());
+        recurrenceDto.setType(recurrence.getType());
+        recurrenceDto.setDaysOfWeek(recurrence.getDaysOfWeek());
+        recurrenceDto.setRecurrenceInterval(recurrence.getRecurrenceInterval());
 
-        return dto;
+        return recurrenceDto;
     }
 }
