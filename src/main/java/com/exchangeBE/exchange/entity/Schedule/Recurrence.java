@@ -27,6 +27,9 @@ public class Recurrence {
     private Set<DayOfWeek> daysOfWeek;
 
     private Integer RecurrenceInterval;
+    @OneToMany
+    @JoinColumn(name = "occasion_id")
+    private Set<Occasion> occasion;
 
     public static Recurrence toRecurrenceEntity(RecurrenceDto recurrenceDto) {
         Recurrence recurrence = new Recurrence();
