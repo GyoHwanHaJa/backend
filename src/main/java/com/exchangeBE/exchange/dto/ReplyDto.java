@@ -1,43 +1,27 @@
 package com.exchangeBE.exchange.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 public class ReplyDto {
     private Long id;
     private String content;
     private LocalDateTime timestamp;
     private Long commentId;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
+    // 기본 생성자
+    public ReplyDto() {
     }
 
-    public void setId(Long id) {
+    // 모든 필드를 포함한 생성자
+    public ReplyDto(Long id, String content, LocalDateTime timestamp, Long commentId) {
         this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
         this.content = content;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public Long getCommentId() {
-        return commentId;
-    }
-
-    public void setCommentId(Long commentId) {
         this.commentId = commentId;
     }
 }

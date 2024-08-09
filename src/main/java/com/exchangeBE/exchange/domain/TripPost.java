@@ -1,14 +1,17 @@
 package com.exchangeBE.exchange.domain;
 
+import java.time.LocalDate;
+import java.util.List;
+
 public class TripPost {
 
     private Long id;
     private String title;
     private String description;
     private String location;
-    private String startDate;
-    private String endDate;
-    private String photos; // 단일 사진 파일 경로 또는 URL
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private List<Tag> tags; // 태그와의 관계 추가
 
     // Getter 및 Setter
     public Long getId() {
@@ -43,27 +46,27 @@ public class TripPost {
         this.location = location;
     }
 
-    public String getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public String getPhotos() {
-        return photos;
+    public List<Tag> getTags() {
+        return tags;
     }
 
-    public void setPhotos(String photos) {
-        this.photos = photos;
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

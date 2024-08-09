@@ -1,9 +1,10 @@
 package com.exchangeBE.exchange.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class TripPostEntity {
@@ -14,35 +15,30 @@ public class TripPostEntity {
 
     private String title;
     private String description;
+    private String location;
 
-    @Temporal(TemporalType.DATE)
+    @ManyToMany
+    @JoinTable(
+            name = "trip_post_tags",
+            joinColumns = @JoinColumn(name = "trip_post_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<TagEntity> tags = new HashSet<>();
+
     private LocalDate startDate;
-
-    @Temporal(TemporalType.DATE)
     private LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
+    private TopicEntity topic;
 
     @ElementCollection
     private List<String> photos;
 
-    @ManyToOne
-    @JoinColumn(name = "topic_id")
-    private TopicEntity topic;
-
-    // 기본 생성자
-    public TripPostEntity() {
+    public enum TopicEntity {
+        ADVENTURE, RELAXATION, CULTURE, NATURE
     }
 
-    // 모든 필드를 초기화하는 생성자
-    public TripPostEntity(Long id, String title, String description, LocalDate startDate, LocalDate endDate, List<String> photos) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.photos = photos;
-    }
-
-    // Getter 및 Setter 메서드 추가
+    // Getter 및 Setter
     public Long getId() {
         return id;
     }
@@ -67,6 +63,22 @@ public class TripPostEntity {
         this.description = description;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Set<TagEntity> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<TagEntity> tags) {
+        this.tags = tags;
+    }
+
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -83,19 +95,19 @@ public class TripPostEntity {
         this.endDate = endDate;
     }
 
-    public List<String> getPhotos() {
-        return photos;
-    }
-
-    public void setPhotos(List<String> photos) {
-        this.photos = photos;
-    }
-
     public TopicEntity getTopic() {
         return topic;
     }
 
     public void setTopic(TopicEntity topic) {
         this.topic = topic;
+    }
+
+    public List<String> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<String> photos) {
+        this.photos = photos;
     }
 }

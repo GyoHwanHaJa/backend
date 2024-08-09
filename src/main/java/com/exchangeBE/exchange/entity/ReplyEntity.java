@@ -62,11 +62,11 @@ public class ReplyEntity {
         this.userId = userId;
     }
 
-    public String getUserProfileImage() {
-        return userProfileImage;
-    }
-
-    public void setUserProfileImage(String userProfileImage) {
-        this.userProfileImage = userProfileImage;
-    }
+//    public String getUserProfileImage() {
+//        return userProfileImage;
+//    }
+//
+//    public void setUserProfileImage(String userProfileImage) {
+//        this.userProfileImage = userProfileImage;
+//    }
 }

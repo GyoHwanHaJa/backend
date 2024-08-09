@@ -19,8 +19,8 @@ public class TagController {
         return tagService.findAllTags();
     }
 
-    @PostMapping
-    public Tag createTag(@RequestBody Tag tag) {
-        return tagService.saveTag(tag);
-    }
+//    @PostMapping
+//    public Tag createTag(@RequestBody Tag tag) {
+//        return tagService.saveTag(tag);
+//    }
 }
