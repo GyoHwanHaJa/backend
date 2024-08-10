@@ -10,6 +10,7 @@ import com.exchangeBE.exchange.entity.Schedule.User;
 import com.exchangeBE.exchange.repository.ScheduleRepository;
 import com.exchangeBE.exchange.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -40,7 +41,8 @@ public class ScheduleService {
     public Set<TagDto> createSchedule(Long userId, ScheduleDto scheduleDto,
                                       RecurrenceDto recurrenceDto, Set<TagDto> tagDto) {
         // 받아온 id를 기반으로 유저 검색
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         // 일정 추가 요청한 유저 설정
         scheduleDto.setUser(user);
 
@@ -67,10 +69,23 @@ public class ScheduleService {
         return ScheduleDto.toScheduleDto(schedule);
     }
 
-    public void updateSchedule(Long id, ScheduleDto scheduleDto) {
-        Schedule schedule = scheduleRepository.findById(id).get();
-        schedule = Schedule.toScheduleEntity(scheduleDto);
-        scheduleRepository.save(schedule);
+    public void updateSchedule(Long scheduleId, ScheduleDto scheduleDto, RecurrenceDto recurrenceDto, Set<TagDto> tagDto) {
+
+        Schedule schedule = scheduleRepository.findById(scheduleId).get();
+        ScheduleDto updateScheduleDto = ScheduleDto.toScheduleDto(schedule);
+
+        recurrenceDto = recurrenceService.updateRecurrence(recurrenceDto);
+        updateScheduleDto.setRecurrenceDto(recurrenceDto);
+
+        updateScheduleDto = ScheduleDto.toScheduleDto(scheduleRepository.save(Schedule.toScheduleEntity(updateScheduleDto)));
+
+        for(TagDto tag : tagDto) {
+            tag = tagService.createTag(tag);
+            scheduleTagService.createScheduleTag(scheduleDto, tag);
+        }
+
+
+
     }
 
     public void deleteSchedule(Long id) {

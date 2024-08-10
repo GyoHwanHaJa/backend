@@ -29,6 +29,10 @@ public class RecurrenceService {
         return RecurrenceDto.toRecurrenceDto(recurrence);
     }
 
+    public RecurrenceDto updateRecurrence(RecurrenceDto recurrenceDto) {
+        Recurrence recurrence = recurrenceRepository.findById(recurrenceDto.getId()).get();
+        return RecurrenceDto.toRecurrenceDto(recurrenceRepository.save(recurrence));
+    }
     private void dailyRecurrence() {
 
     }

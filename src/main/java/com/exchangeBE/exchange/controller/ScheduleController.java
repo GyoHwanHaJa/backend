@@ -60,19 +60,6 @@ public class ScheduleController {
         }
     }
 
-    /* 일정 조회 */
-    // userId 기반 해당 월 일정 조회 (여러 개), 연도, 월
-    @GetMapping("/{postId}/{month}")
-    public void getNumberOfMonthSchedules(@PathVariable Long postId, @PathVariable Integer month) {
-
-    }
-//    @GetMapping("/{userId}")
-//    public void getNumberOfMonthSchedules(@PathVariable Long userId) {}
-
-    // 선택한 날짜 기반 일정 조회 (여러 개)
-    // scheduleId 기반 일정 조회
-
-
     /* 일정 추가 */
     @PostMapping("/{userId}")
     @ResponseBody
@@ -90,7 +77,11 @@ public class ScheduleController {
     /* 일정 수정 */
     @PutMapping("/{scheduleId}")
     public String updateSchedule(@PathVariable Long scheduleId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
-        //scheduleService.updateSchedule(user);
+        ScheduleDto scheduleDto = scheduleRequestDto.getScheduleDto();
+        RecurrenceDto recurrenceDto = scheduleRequestDto.getRecurrenceDto();
+        Set<TagDto> tagDto = scheduleRequestDto.getTagDto();
+
+        scheduleService.updateSchedule(scheduleId, scheduleDto, recurrenceDto, tagDto);
         return "";
     }
 

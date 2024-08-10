@@ -28,4 +28,18 @@ public class TagService {
 
         return tagDto;
     }
+
+    public TagDto updateTag(TagDto tagDto) {
+        Optional<Tag> optionalTag = tagRepository.findByName(tagDto.getName());
+
+        if (optionalTag.isPresent()) {
+            tagDto = TagDto.toTagDto(optionalTag.get());
+            return tagDto;
+        }
+        else {
+            tagDto = TagDto.toTagDto(tagRepository.save(Tag.toTagEntity(tagDto)));
+        }
+
+        return tagDto;
+    }
 }
