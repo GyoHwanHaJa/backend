@@ -24,14 +24,7 @@ public class ScheduleTagService {
         scheduleTag.setTag(Tag.toTagEntity(tagDto));
         scheduleTag.setSchedule(Schedule.toScheduleEntity(scheduleDto));
 
-        
-
         scheduleTag = scheduleTagRepository.save(scheduleTag);
-
-        System.out.println("여기부터");
-        System.out.println("tag" + scheduleTag.getTag());
-        System.out.println("schedule" + scheduleTag.getSchedule());
-        
         
         return scheduleTag;
     }

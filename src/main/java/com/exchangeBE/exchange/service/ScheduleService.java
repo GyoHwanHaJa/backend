@@ -1,5 +1,6 @@
 package com.exchangeBE.exchange.service;
 
+import com.exchangeBE.exchange.dto.MainPageDto;
 import com.exchangeBE.exchange.dto.RecurrenceDto;
 import com.exchangeBE.exchange.dto.ScheduleDto;
 import com.exchangeBE.exchange.dto.TagDto;
@@ -11,6 +12,12 @@ import com.exchangeBE.exchange.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -34,15 +41,13 @@ public class ScheduleService {
                                       RecurrenceDto recurrenceDto, Set<TagDto> tagDto) {
         // 받아온 id를 기반으로 유저 검색
         User user = userRepository.findById(userId).get();
-        // 특정 유저의 일정으로 설정
+        // 일정 추가 요청한 유저 설정
         scheduleDto.setUser(user);
 
+        // recurrenceId 받아옴
         recurrenceDto = recurrenceService.createRecurrence(recurrenceDto);
-
-        // 스케줄에 태그와
-
+        // 일정의 반복 등록
         scheduleDto.setRecurrenceDto(recurrenceDto);
-
         // schedule dto 저장
         scheduleDto = ScheduleDto.toScheduleDto(scheduleRepository.save(Schedule.toScheduleEntity(scheduleDto)));
 
@@ -57,9 +62,9 @@ public class ScheduleService {
         return tagDto;
     }
 
-    public void readSchedule(ScheduleDto scheduleDto) {
-        Long id = scheduleDto.getId();
-        Schedule schedule = scheduleRepository.findById(id).get();
+    public ScheduleDto readSchedule(Long userId) {
+        Schedule schedule = scheduleRepository.findById(userId).get();
+        return ScheduleDto.toScheduleDto(schedule);
     }
 
     public void updateSchedule(Long id, ScheduleDto scheduleDto) {
@@ -71,5 +76,46 @@ public class ScheduleService {
     public void deleteSchedule(Long id) {
         Schedule schedule = scheduleRepository.findById(id).get();
         scheduleRepository.delete(schedule);
+    }
+
+    public MainPageDto getMainPage(Long userId, Integer year, Integer month, Integer day) {
+        User user = userRepository.findById(userId).get();
+        LocalDateTime now = LocalDateTime.now();
+        Long dDay = ChronoUnit.DAYS.between(user.getExchangePeriodStart(), now); // 귀국 남을 날짜
+
+        // 보고서 개수
+        Integer count = scheduleRepository.countByUserId(userId);
+
+
+        // 해당 월의 일정 날짜
+        List<Schedule> scheduleList = scheduleRepository.findAllByYearAndMonth(year, month);
+        List<Integer> dayList = new ArrayList<>();
+
+        for (Schedule schedule : scheduleList) {
+            dayList.add(schedule.getStartTime().getDayOfMonth());
+        }
+
+        // 오늘 일정
+        LocalDate date = LocalDate.of(year, month, day);
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        List <Schedule> todaySchedule = scheduleRepository.findAllByStartTimeBetween(startOfDay, endOfDay);
+        List<String> scheduleNameList = new ArrayList<>();
+        List<LocalDateTime> scheduleTimeList = new ArrayList<>();
+
+        for (Schedule schedule : todaySchedule) {
+            scheduleNameList.add(schedule.getScheduleName());
+            scheduleTimeList.add(schedule.getStartTime());
+        }
+
+        MainPageDto mainPageDto = new MainPageDto();
+        mainPageDto.setScheduleNameList(scheduleNameList);
+        mainPageDto.setScheduleTimeList(scheduleTimeList);
+        mainPageDto.setDayList(dayList);
+        mainPageDto.setDDay(dDay);
+        mainPageDto.setCount(count);
+
+        return mainPageDto;
     }
 }

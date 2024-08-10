@@ -18,7 +18,7 @@ public class Tag {
     private String name;
     private Boolean isCustom;
 
-    @OneToMany(mappedBy = "tag")
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScheduleTag> scheduleTags = new HashSet<>();
 
     public static Tag toTagEntity(TagDto tagDto) {

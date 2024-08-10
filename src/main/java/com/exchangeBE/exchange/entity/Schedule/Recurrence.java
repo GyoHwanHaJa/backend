@@ -27,7 +27,8 @@ public class Recurrence {
     private Set<DayOfWeek> daysOfWeek;
 
     private Integer RecurrenceInterval;
-    @OneToMany
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "occasion_id")
     private Set<Occasion> occasion;
 

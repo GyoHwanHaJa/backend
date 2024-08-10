@@ -25,10 +25,10 @@ public class Schedule {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScheduleTag> scheduleTags;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "recurrence_id", referencedColumnName = "id")
     private Recurrence recurrence;
 
