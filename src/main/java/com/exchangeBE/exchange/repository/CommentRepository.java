@@ -2,9 +2,12 @@ package com.exchangeBE.exchange.repository;
 
 import com.exchangeBE.exchange.entity.CommentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
-    List<CommentEntity> findByPostId(Long postId);  // 이 부분은 게시글 ID로 댓글을 조회하는 메서드입니다.
+    // 특정 TravelEntity에 속한 모든 댓글을 조회하는 메서드
+    List<CommentEntity> findByTravelPostId(Long travelPostId);
 }

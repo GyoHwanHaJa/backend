@@ -8,31 +8,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/comments/{commentId}/replies")
+@RequestMapping("/api/replies")
 public class ReplyController {
 
     @Autowired
     private ReplyService replyService;
 
     @GetMapping
+    public List<ReplyDto> getAllReplies() {
+        return replyService.findAllReplies();
+    }
+
+    @GetMapping("/{replyId}")
+    public ReplyDto getReplyById(@PathVariable Long replyId) {
+        return replyService.findReplyById(replyId);
+    }
+
+    @GetMapping("/comment/{commentId}")
     public List<ReplyDto> getRepliesByCommentId(@PathVariable Long commentId) {
         return replyService.findRepliesByCommentId(commentId);
     }
 
     @PostMapping
-    public ReplyDto createReply(@PathVariable Long commentId, @RequestBody ReplyDto replyDto) {
-        replyDto.setCommentId(commentId);
-        return replyService.saveReply(replyDto);
+    public ReplyDto createReply(@RequestBody ReplyDto replyDto, @RequestParam Long commentId) {
+        return replyService.saveReply(replyDto, commentId);
     }
 
     @PutMapping("/{replyId}")
-    public ReplyDto updateReply(@PathVariable Long commentId, @PathVariable Long replyId, @RequestBody ReplyDto replyDto) {
-        replyDto.setCommentId(commentId);
+    public ReplyDto updateReply(@PathVariable Long replyId, @RequestBody ReplyDto replyDto) {
         return replyService.updateReply(replyId, replyDto);
     }
 
     @DeleteMapping("/{replyId}")
-    public void deleteReply(@PathVariable Long commentId, @PathVariable Long replyId) {
+    public void deleteReply(@PathVariable Long replyId) {
         replyService.deleteReply(replyId);
     }
 }

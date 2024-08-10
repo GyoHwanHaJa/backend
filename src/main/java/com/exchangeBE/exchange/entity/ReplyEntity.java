@@ -1,76 +1,44 @@
 package com.exchangeBE.exchange.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.time.LocalDateTime;
-
-@Entity
 @Getter
 @Setter
+@ToString
+@Entity
+@Table(name = "reply")
 public class ReplyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "reply_id")
     private Long id;
-    private String content;
-    private LocalDateTime timestamp;
 
-    @ManyToOne
-    @JoinColumn(name = "comment_id")
+    @Column(nullable = false)
+    private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id", nullable = false)
     private CommentEntity comment;
 
-    private Long userId; // 댓글 작성자 ID
-    private String userProfileImage; // 댓글 작성자 프로필 이미지
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
-    // Getters and Setters
-//
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
-//
-//    public String getContent() {
-//        return content;
-//    }
-//
-//    public void setContent(String content) {
-//        this.content = content;
-//    }
-//
-//    public LocalDateTime getTimestamp() {
-//        return timestamp;
-//    }
-//
-//    public void setTimestamp(LocalDateTime timestamp) {
-//        this.timestamp = timestamp;
-//    }
-//
-//    public CommentEntity getComment() {
-//        return comment;
-//    }
-//
-//    public void setComment(CommentEntity comment) {
-//        this.comment = comment;
-//    }
-//
-//    public Long getUserId() {
-//        return userId;
-//    }
-//
-//    public void setUserId(Long userId) {
-//        this.userId = userId;
-//    }
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-//    public String getUserProfileImage() {
-//        return userProfileImage;
-//    }
-//
-//    public void setUserProfileImage(String userProfileImage) {
-//        this.userProfileImage = userProfileImage;
-//    }
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
