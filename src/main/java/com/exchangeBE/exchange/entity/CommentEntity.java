@@ -4,10 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 public class CommentEntity {
 
     @Id
@@ -18,30 +22,30 @@ public class CommentEntity {
     // 필요한 필드 추가
 
     // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    // 다른 필드들에 대한 getter/setter 추가
+//
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//
+//    public String getContent() {
+//        return content;
+//    }
+//
+//    public void setContent(String content) {
+//        this.content = content;
+//    }
+//
+//    public LocalDateTime getTimestamp() {
+//        return timestamp;
+//    }
+//
+//    public void setTimestamp(LocalDateTime timestamp) {
+//        this.timestamp = timestamp;
+//    }
+//
+//    // 다른 필드들에 대한 getter/setter 추가
 }

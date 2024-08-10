@@ -39,8 +39,8 @@ public class MainService {
         dto.setId(entity.getId());
         dto.setTitle(entity.getTitle());
         dto.setDescription(entity.getDescription());
-        dto.setStartDate(entity.getStartDate());
-        dto.setEndDate(entity.getEndDate());
+        dto.setTravelDateStart(entity.getTravelDateStart());  // 메서드 명 확인 필요
+        dto.setTravelDateEnd(entity.getTravelDateEnd());      // 메서드 명 확인 필요
         dto.setTopic(entity.getTopic());
         dto.setPhotos(entity.getPhotos());
         return dto;
@@ -52,8 +52,8 @@ public class MainService {
         entity.setId(dto.getId());
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
-        entity.setStartDate(dto.getStartDate());
-        entity.setEndDate(dto.getEndDate());
+        entity.setTravelDateStart(dto.getTravelDateStart());  // 메서드 명 확인 필요
+        entity.setTravelDateEnd(dto.getTravelDateEnd());      // 메서드 명 확인 필요
         entity.setTopic(dto.getTopic());
         entity.setPhotos(dto.getPhotos());
         return entity;

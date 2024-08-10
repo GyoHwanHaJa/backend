@@ -54,39 +54,37 @@ public class TripPostService {
     }
 
     private TripPostDto convertToDto(TripPostEntity entity) {
-        if (entity == null) return null;
         TripPostDto dto = new TripPostDto();
         dto.setId(entity.getId());
         dto.setTitle(entity.getTitle());
         dto.setDescription(entity.getDescription());
-        dto.setStartDate(entity.getStartDate());
-        dto.setEndDate(entity.getEndDate());
+        dto.setCountry(entity.getCountry());  // 추가
+        dto.setTravelDateStart(entity.getTravelDateStart());  // 추가
+        dto.setTravelDateEnd(entity.getTravelDateEnd());  // 추가
+        dto.setLocation(entity.getLocation());  // 추가
         dto.setTopic(entity.getTopic());
-        dto.setPhotos(entity.getPhotos());
         dto.setTags(entity.getTags().stream()
                 .map(TagEntity::getName)
                 .collect(Collectors.toList()));
+        dto.setPhotos(entity.getPhotos());
         return dto;
     }
 
     private TripPostEntity convertToEntity(TripPostDto dto) {
-        if (dto == null) return null;
-
         TripPostEntity entity = new TripPostEntity();
         entity.setId(dto.getId());
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
-        entity.setStartDate(dto.getStartDate());
-        entity.setEndDate(dto.getEndDate());
+        entity.setCountry(dto.getCountry());  // 추가
+        entity.setTravelDateStart(dto.getTravelDateStart());  // 추가
+        entity.setTravelDateEnd(dto.getTravelDateEnd());  // 추가
+        entity.setLocation(dto.getLocation());  // 추가
         entity.setTopic(dto.getTopic());
-        entity.setPhotos(dto.getPhotos());
-
-        Set<TagEntity> tagEntities = dto.getTags().stream()
+        entity.setTags(dto.getTags().stream()
                 .map(tagName -> tagRepository.findByName(tagName)
                         .orElseThrow(() -> new RuntimeException("Tag not found")))
-                .collect(Collectors.toSet());
-
-        entity.setTags(tagEntities);
+                .collect(Collectors.toSet()));
+        entity.setPhotos(dto.getPhotos());
         return entity;
     }
 }

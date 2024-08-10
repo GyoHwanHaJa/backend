@@ -1,10 +1,14 @@
 package com.exchangeBE.exchange.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 public class ReplyEntity {
 
     @Id
@@ -21,46 +25,46 @@ public class ReplyEntity {
     private String userProfileImage; // 댓글 작성자 프로필 이미지
 
     // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public CommentEntity getComment() {
-        return comment;
-    }
-
-    public void setComment(CommentEntity comment) {
-        this.comment = comment;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+//
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//
+//    public String getContent() {
+//        return content;
+//    }
+//
+//    public void setContent(String content) {
+//        this.content = content;
+//    }
+//
+//    public LocalDateTime getTimestamp() {
+//        return timestamp;
+//    }
+//
+//    public void setTimestamp(LocalDateTime timestamp) {
+//        this.timestamp = timestamp;
+//    }
+//
+//    public CommentEntity getComment() {
+//        return comment;
+//    }
+//
+//    public void setComment(CommentEntity comment) {
+//        this.comment = comment;
+//    }
+//
+//    public Long getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(Long userId) {
+//        this.userId = userId;
+//    }
 
 //    public String getUserProfileImage() {
 //        return userProfileImage;

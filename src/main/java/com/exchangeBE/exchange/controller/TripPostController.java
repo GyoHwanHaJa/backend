@@ -21,7 +21,6 @@ public class TripPostController {
         return tripPostService.saveTrip(tripPostDto);
     }
 
-    // 추가된 태그 관련 메서드들
     @PostMapping("/{tripPostId}/tags/{tagId}")
     public void addTagToTripPost(@PathVariable Long tripPostId, @PathVariable Long tagId) {
         tripPostService.addTagToTripPost(tripPostId, tagId);
