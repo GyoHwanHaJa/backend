@@ -1,80 +1,68 @@
-//package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service;
+
+import org.springframework.beans.factory.annotation.Value;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+
+
 //
-//import com.exchangeBE.exchange.dto.PlaceDto;
-//import com.google.maps.GeoApiContext;
-//import com.google.maps.PlaceAutocompleteRequest;
-//import com.google.maps.PlacesApi;
-//import com.google.maps.model.*;
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//@Service
-//public class GooglePlacesService {
-//
-//    @Value("${google.maps.api.key}")
-//    private String apiKey;
-//
-//    public List<PlaceDto> searchPlaces(String query) {
-//        List<PlaceDto> places = new ArrayList<>();
-//
-//        try {
-//            GeoApiContext context = new GeoApiContext.Builder()
-//                    .apiKey(apiKey)
-//                    .build();
-//
-//            PlacesSearchResponse response = PlacesApi.textSearchQuery(context, query).await();
-//
-//            for (PlacesSearchResult result : response.results) {
-//                String name = result.name;
-//                String city = extractCity(result, context);
-//                String type = extractType(result);
-//
-//                places.add(new PlaceDto(name, city, type));
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return places;
-//    }
-//
-//    private String extractCity(PlacesSearchResult result, GeoApiContext context) {
-//        try {
-//            PlaceDetails details = PlacesApi.placeDetails(context, result.placeId).await();
-//            for (AddressComponent component : details.addressComponents) {
-//                for (AddressComponentType type : component.types) {
-//                    if (type == AddressComponentType.LOCALITY) {
-//                        return component.longName;
-//                    }
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return "";
-//    }
-//
-//    private String extractType(PlacesSearchResult result) {
-//        if (result.types != null && result.types.length > 0) {
-//            String type = result.types[0].toString();
-//            // 타입을 한글로 변환
-//            switch (type) {
-//                case "restaurant":
-//                    return "식당";
-//                case "school":
-//                    return "학교";
-//                case "park":
-//                    return "공원";
-//                // 필요한 만큼 타입을 추가
-//                default:
-//                    return type;
-//            }
-//        }
-//        return "";
-//    }
-//
-//}
+import com.exchangeBE.exchange.dto.PlaceDto;
+import com.google.maps.GeoApiContext;
+import com.google.maps.PlaceAutocompleteRequest;
+import com.google.maps.PlacesApi;
+import com.google.maps.model.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class GooglePlacesService {
+    @Value("${google.maps.api.key}")
+    private String apiKey;
+
+    public String findPlaceFromText(String query) {
+        StringBuilder resultBuilder = new StringBuilder();
+
+        try {
+            // API 호출 URL 구성
+            String url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json" +
+                    "?input=" + URLEncoder.encode(query, "UTF-8") +
+                    "&inputtype=textquery" +
+                    "&fields=name,formatted_address" +
+                    "&key=" + "AIzaSyBMQMDP0Mg84AcxhNW0nczyk60OW16nSKs";
+
+            // HttpURLConnection을 사용하여 요청 보내기
+            URL requestUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+            // 응답 처리
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // 응답 내용을 문자열로 반환
+            resultBuilder.append(response.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultBuilder.append("Error occurred: ").append(e.getMessage());
+        }
+
+        return resultBuilder.toString();
+    }
+
+
+}
