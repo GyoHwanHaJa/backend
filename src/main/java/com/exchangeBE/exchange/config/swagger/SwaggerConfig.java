@@ -11,9 +11,9 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
-                .title("데모 프로젝트 API Document")
+                .title("교환하자")
                 .version("v0.0.1")
-                .description("데모 프로젝트의 API 명세서입니다.");
+                .description("교환하자 관련 명세서");
         return new OpenAPI()
                 .components(new Components())
                 .info(info);

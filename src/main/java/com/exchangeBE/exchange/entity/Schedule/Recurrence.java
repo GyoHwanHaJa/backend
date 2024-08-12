@@ -28,9 +28,12 @@ public class Recurrence {
 
     private Integer RecurrenceInterval;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)//, orphanRemoval = true)
     @JoinColumn(name = "occasion_id")
     private Set<Occasion> occasion;
+
+    @OneToOne(mappedBy = "recurrence", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    private Schedule schedule;
 
     public static Recurrence toRecurrenceEntity(RecurrenceDto recurrenceDto) {
         Recurrence recurrence = new Recurrence();

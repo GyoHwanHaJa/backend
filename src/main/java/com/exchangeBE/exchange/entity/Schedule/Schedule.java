@@ -25,7 +25,7 @@ public class Schedule {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)//, orphanRemoval = true)
     private Set<ScheduleTag> scheduleTags;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE})

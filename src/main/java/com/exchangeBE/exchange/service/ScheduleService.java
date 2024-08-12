@@ -8,9 +8,11 @@ import com.exchangeBE.exchange.entity.Schedule.Schedule;
 import com.exchangeBE.exchange.entity.Schedule.ScheduleTag;
 import com.exchangeBE.exchange.entity.Schedule.User;
 import com.exchangeBE.exchange.repository.ScheduleRepository;
+import com.exchangeBE.exchange.repository.ScheduleTagRepository;
 import com.exchangeBE.exchange.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,14 +30,16 @@ public class ScheduleService {
     private final ScheduleTagService scheduleTagService;
     private final TagService tagService;
     private final UserRepository userRepository;
+    private final ScheduleTagRepository scheduleTagRepository;
 
     public ScheduleService(ScheduleRepository scheduleRepository, ScheduleTagService scheduleTagService,
-                           TagService tagService, UserRepository userRepository, RecurrenceService recurrenceService) {
+                           TagService tagService, UserRepository userRepository, RecurrenceService recurrenceService, ScheduleTagRepository scheduleTagRepository) {
         this.scheduleRepository = scheduleRepository;
         this.scheduleTagService = scheduleTagService;
         this.userRepository = userRepository;
         this.tagService = tagService;
         this.recurrenceService = recurrenceService;
+        this.scheduleTagRepository = scheduleTagRepository;
     }
 
     public Set<TagDto> createSchedule(Long userId, ScheduleDto scheduleDto,
@@ -69,34 +73,39 @@ public class ScheduleService {
         return ScheduleDto.toScheduleDto(schedule);
     }
 
-    public void updateSchedule(Long scheduleId, ScheduleDto scheduleDto, RecurrenceDto recurrenceDto, Set<TagDto> tagDto) {
+    public ScheduleDto updateSchedule(Long scheduleId, ScheduleDto scheduleDto, RecurrenceDto recurrenceDto, Set<TagDto> tagDto) {
 
         Schedule schedule = scheduleRepository.findById(scheduleId).get();
-        ScheduleDto updateScheduleDto = ScheduleDto.toScheduleDto(schedule);
-
+        //ScheduleDto updateScheduleDto = ScheduleDto.toScheduleDto(schedule);
+        scheduleDto.setId(scheduleId);
+        recurrenceDto.setId(schedule.getRecurrence().getId());
         recurrenceDto = recurrenceService.updateRecurrence(recurrenceDto);
-        updateScheduleDto.setRecurrenceDto(recurrenceDto);
 
-        updateScheduleDto = ScheduleDto.toScheduleDto(scheduleRepository.save(Schedule.toScheduleEntity(updateScheduleDto)));
+        scheduleDto.setRecurrenceDto(recurrenceDto);
+        scheduleDto.setId(schedule.getId());
+        scheduleDto.setUser(schedule.getUser());
+        scheduleDto.setScheduleTags(schedule.getScheduleTags());
+
+        scheduleDto = ScheduleDto.toScheduleDto(scheduleRepository.save(Schedule.toScheduleEntity(scheduleDto)));
 
         for(TagDto tag : tagDto) {
             tag = tagService.createTag(tag);
             scheduleTagService.createScheduleTag(scheduleDto, tag);
         }
 
-
-
+        return scheduleDto;
+        //return ScheduleDto.toScheduleDto(scheduleRepository.save(schedule));
     }
 
-    public void deleteSchedule(Long id) {
-        Schedule schedule = scheduleRepository.findById(id).get();
+    public void deleteSchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).get();
         scheduleRepository.delete(schedule);
     }
 
     public MainPageDto getMainPage(Long userId, Integer year, Integer month, Integer day) {
         User user = userRepository.findById(userId).get();
         LocalDateTime now = LocalDateTime.now();
-        Long dDay = ChronoUnit.DAYS.between(user.getExchangePeriodStart(), now); // 귀국 남을 날짜
+        Long dDay = ChronoUnit.DAYS.between(now, user.getExchangePeriodEnd()); // 귀국 남은 날짜
 
         // 보고서 개수
         Integer count = scheduleRepository.countByUserId(userId);

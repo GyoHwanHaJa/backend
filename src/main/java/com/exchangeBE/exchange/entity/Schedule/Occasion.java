@@ -16,7 +16,7 @@ public class Occasion {
 
     @ManyToOne
     @JoinColumn(name = "recurrence_id")
-    private Recurrence recurrence; // 여기
+    private Recurrence recurrence;
 
     private LocalDateTime time;
 }

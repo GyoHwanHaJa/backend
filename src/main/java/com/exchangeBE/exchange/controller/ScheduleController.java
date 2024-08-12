@@ -3,9 +3,6 @@ package com.exchangeBE.exchange.controller;
 import com.exchangeBE.exchange.DynamicResponseBuilder;
 import com.exchangeBE.exchange.dto.*;
 import com.exchangeBE.exchange.service.ScheduleService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.Set;
 
-@Tag(name = "Schedule", description = "일정 관련 API")
 @RestController
 @RequestMapping("/schedules")
 public class ScheduleController {
@@ -76,19 +72,20 @@ public class ScheduleController {
 
     /* 일정 수정 */
     @PutMapping("/{scheduleId}")
-    public String updateSchedule(@PathVariable Long scheduleId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
+    public ResponseEntity<?> updateSchedule(@PathVariable Long scheduleId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
         ScheduleDto scheduleDto = scheduleRequestDto.getScheduleDto();
         RecurrenceDto recurrenceDto = scheduleRequestDto.getRecurrenceDto();
         Set<TagDto> tagDto = scheduleRequestDto.getTagDto();
 
-        scheduleService.updateSchedule(scheduleId, scheduleDto, recurrenceDto, tagDto);
-        return "";
+        ScheduleDto updatedScheduleDto = scheduleService.updateSchedule(scheduleId, scheduleDto, recurrenceDto, tagDto);
+
+        return ResponseEntity.ok(updatedScheduleDto);
     }
 
     /* 일정 삭제 */
     @DeleteMapping("/{scheduleId}")
-    public String deleteSchedule(@PathVariable Long scheduleId) {
+    public ResponseEntity<?> deleteSchedule(@PathVariable Long scheduleId) {
         scheduleService.deleteSchedule(scheduleId);
-        return "";
+        return ResponseEntity.noContent().build();
     }
 }
