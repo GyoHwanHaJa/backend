@@ -2,7 +2,8 @@ package com.exchangeBE.exchange.controller;
 
 import com.exchangeBE.exchange.DynamicResponseBuilder;
 import com.exchangeBE.exchange.dto.*;
-import com.exchangeBE.exchange.service.ScheduleService;
+import com.exchangeBE.exchange.service.schedule.ScheduleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/schedule")
+@Tag(name = "안녕", description = "하세요")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 

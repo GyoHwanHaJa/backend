@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/report")
 public class ReportController {
-    @GetMapping("/{userId}") // list
-    @GetMapping("/{reportId}")
-    @PostMapping("/{userId}")
+    //@GetMapping("/{userId}") // list
+    //@GetMapping("/{reportId}")
+    //@PostMapping("/{userId}")
 }

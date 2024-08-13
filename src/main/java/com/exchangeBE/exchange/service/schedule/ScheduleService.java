@@ -1,18 +1,15 @@
-package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service.schedule;
 
 import com.exchangeBE.exchange.dto.MainPageDto;
 import com.exchangeBE.exchange.dto.RecurrenceDto;
 import com.exchangeBE.exchange.dto.ScheduleDto;
 import com.exchangeBE.exchange.dto.TagDto;
 import com.exchangeBE.exchange.entity.Schedule.Schedule;
-import com.exchangeBE.exchange.entity.Schedule.ScheduleTag;
-import com.exchangeBE.exchange.entity.Schedule.User;
-import com.exchangeBE.exchange.repository.ScheduleRepository;
-import com.exchangeBE.exchange.repository.ScheduleTagRepository;
+import com.exchangeBE.exchange.entity.User;
+import com.exchangeBE.exchange.repository.schedule.ScheduleRepository;
+import com.exchangeBE.exchange.repository.schedule.ScheduleTagRepository;
 import com.exchangeBE.exchange.repository.UserRepository;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

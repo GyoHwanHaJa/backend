@@ -1,6 +1,7 @@
 package com.exchangeBE.exchange.entity.Schedule;
 
 import com.exchangeBE.exchange.dto.ScheduleDto;
+import com.exchangeBE.exchange.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,8 @@
-package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service.schedule;
 
 import com.exchangeBE.exchange.dto.RecurrenceDto;
-import com.exchangeBE.exchange.entity.Schedule.Occasion;
 import com.exchangeBE.exchange.entity.Schedule.Recurrence;
-import com.exchangeBE.exchange.repository.RecurrenceRepository;
+import com.exchangeBE.exchange.repository.schedule.RecurrenceRepository;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,4 +1,4 @@
-package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service.schedule;
 
 import com.exchangeBE.exchange.entity.Schedule.Occasion;
 import org.springframework.stereotype.Service;

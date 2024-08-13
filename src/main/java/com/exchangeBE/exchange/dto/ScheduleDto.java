@@ -1,10 +1,8 @@
 package com.exchangeBE.exchange.dto;
 
-import com.exchangeBE.exchange.entity.Schedule.Recurrence;
 import com.exchangeBE.exchange.entity.Schedule.Schedule;
 import com.exchangeBE.exchange.entity.Schedule.ScheduleTag;
-import com.exchangeBE.exchange.entity.Schedule.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.exchangeBE.exchange.entity.User;
 import lombok.*;
 
 import java.time.LocalDateTime;

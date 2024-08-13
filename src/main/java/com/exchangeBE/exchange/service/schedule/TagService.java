@@ -1,8 +1,8 @@
-package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service.schedule;
 
 import com.exchangeBE.exchange.dto.TagDto;
 import com.exchangeBE.exchange.entity.Schedule.Tag;
-import com.exchangeBE.exchange.repository.TagRepository;
+import com.exchangeBE.exchange.repository.schedule.TagRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

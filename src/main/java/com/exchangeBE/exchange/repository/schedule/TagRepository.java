@@ -1,4 +1,4 @@
-package com.exchangeBE.exchange.repository;
+package com.exchangeBE.exchange.repository.schedule;
 
 import com.exchangeBE.exchange.entity.Schedule.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
