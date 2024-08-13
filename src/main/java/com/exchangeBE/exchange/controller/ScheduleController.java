@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/schedules")
+@RequestMapping("/api")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
