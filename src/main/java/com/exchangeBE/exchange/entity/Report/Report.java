@@ -26,7 +26,7 @@ public class Report {
 
     // 보고서는 여러 개의 단계로 구성된다.
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
-    private List<Stage> stages = new ArrayList<Stage>();
+    private List<Stage> stages = new ArrayList<>();
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
