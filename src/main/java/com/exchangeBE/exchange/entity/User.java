@@ -1,6 +1,9 @@
 package com.exchangeBE.exchange.entity;
 
+<<<<<<< HEAD
 import com.exchangeBE.exchange.entity.Schedule.MembershipLevel;
+=======
+>>>>>>> main
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
