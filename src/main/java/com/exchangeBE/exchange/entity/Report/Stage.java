@@ -24,7 +24,7 @@ public class Stage {
     private String content;
 
     @OneToMany(mappedBy = "stage", cascade = CascadeType.ALL)
-    private List<Option> options = new ArrayList<>();
+    private List<Options> options = new ArrayList<>();
 
     // 사진 최대 4장
     @OneToMany(mappedBy = "stage", cascade = CascadeType.ALL)

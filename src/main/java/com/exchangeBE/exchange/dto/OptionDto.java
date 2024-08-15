@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DataUploadDto {
-    private Integer stageNumber;
+public class OptionDto {
+    private Long stageId;
     private String content;
 }

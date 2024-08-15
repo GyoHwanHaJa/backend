@@ -56,7 +56,6 @@ public class ScheduleService {
 
 
         // 태그 생성 -> 일정 엔티티와 의존성 X
-
         for(TagDto tag : tagDto) {
             tag = tagService.createTag(tag); // 태그 레코드 생성
             scheduleTagService.createScheduleTag(scheduleDto, tag); // 일정-태그 조인 테이블 레코드 생성

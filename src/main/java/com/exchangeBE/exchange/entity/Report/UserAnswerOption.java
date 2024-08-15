@@ -18,5 +18,5 @@ public class UserAnswerOption {
 
     @ManyToOne
     @JoinColumn(name = "option_id")
-    private Option option;
+    private Options option;
 }

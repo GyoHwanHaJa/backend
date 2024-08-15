@@ -51,7 +51,7 @@ public class ReportService {
         userAnswer = userAnswerRepository.save(userAnswer);
 
         for (Long optionId : selectedOptionIds) {
-            Option option = optionRepository.findById(optionId).orElseThrow(() -> new RuntimeException("Option not found"));
+            Options option = optionRepository.findById(optionId).orElseThrow(() -> new RuntimeException("Option not found"));
             UserAnswerOption userAnswerOption = new UserAnswerOption();
             userAnswerOption.setUserAnswer(userAnswer);
             userAnswerOption.setOption(option);
