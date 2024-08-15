@@ -7,7 +7,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Option { // 선택지
+public class Options { // 선택지
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
