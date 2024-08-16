@@ -1,20 +1,23 @@
 package com.exchangeBE.exchange.entity;
 
-import com.exchangeBE.exchange.dto.CommentRequestDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Getter
+@Setter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment extends Timestamped {
+@NoArgsConstructor
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,40 +34,17 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
-    private List<Likes> likesList = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Comment parentComment; //부모 댓글
 
-    @Column
-    private Long parentCommentId;
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+    private List<Comment> replies = new ArrayList<>(); // 대댓글 리스트
 
-    @OrderBy("createdAt asc ")
-    @OneToMany(mappedBy = "parentCommentId", cascade = CascadeType.ALL)
-    private List<Comment> childCommentList = new ArrayList<>();
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @Builder
-    private Comment(CommentRequestDTO requestDto, Board board, User user) {
-        this.content = requestDto.getContents();
-        this.parentCommentId = requestDto.getParentCommentId();
-        this.board = board;
-        this.user = user;
-    }
-
-    public void update(CommentRequestDTO requestDto, User user) {
-        this.content = requestDto.getContents();
-        this.user = user;
-    }
-
-    public static Comment of(CommentRequestDTO requestDto, Board board, User user) {
-        Comment comment = Comment.builder()
-                .requestDto(requestDto)
-                .board(board)
-                .user(user)
-                .build();
-        board.getCommentList().add(comment);
-        return comment;
-    }
-
-    public void addChildComment(Comment child) {
-        this.getChildCommentList().add(child);
-    }
+    @LastModifiedDate
+    private LocalDateTime modifiedAt;
 }
+

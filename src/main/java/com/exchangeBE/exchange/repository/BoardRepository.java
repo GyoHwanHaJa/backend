@@ -11,8 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    List<Board> findAllByOrderByModifiedAtDesc();
-    Optional<Board>  findByIdAndUser(Long id, User user);
-    void deleteAllByUser(User user);
-
+    List<Board> findAllByOrderByCreatedAtDesc(); // 최신순 정렬
 }

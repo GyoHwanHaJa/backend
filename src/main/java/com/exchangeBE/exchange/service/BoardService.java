@@ -1,155 +1,163 @@
 package com.exchangeBE.exchange.service;
 
 
-import com.exchangeBE.exchange.common.ApiResponseDto;
-import com.exchangeBE.exchange.common.ResponseUtils;
-import com.exchangeBE.exchange.common.SuccessResponse;
 import com.exchangeBE.exchange.dto.BoardRequestDTO;
 import com.exchangeBE.exchange.dto.BoardResponseDTO;
+import com.exchangeBE.exchange.dto.CommentRequestDTO;
 import com.exchangeBE.exchange.dto.CommentResponseDTO;
 import com.exchangeBE.exchange.entity.Board;
-import com.exchangeBE.exchange.entity.User;
-import com.exchangeBE.exchange.entity.enumSet.ErrorType;
-import com.exchangeBE.exchange.entity.enumSet.UserRoleEnum;
-import com.exchangeBE.exchange.exception.RestApiException;
-import com.exchangeBE.exchange.repository.BoardRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.exchangeBE.exchange.entity.Comment;
-import java.util.ArrayList;
-import java.util.Comparator;
+import com.exchangeBE.exchange.entity.User;
+import com.exchangeBE.exchange.repository.BoardRepository;
+import com.exchangeBE.exchange.repository.CommentRepository;
+import com.exchangeBE.exchange.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 
 
 @Service
-@RequiredArgsConstructor
 public class BoardService {
+    @Autowired
+    private BoardRepository boardRepository;
 
-    private final BoardRepository boardRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    // 게시글 전체 목록 조회
-    @Transactional(readOnly = true)
-    public ApiResponseDto<List<BoardResponseDTO>> getPosts() {
+    @Autowired
+    private CommentRepository commentRepository;
 
-        List<Board> boardList = boardRepository.findAllByOrderByModifiedAtDesc();
-        List<BoardResponseDTO> responseDtoList = new ArrayList<>();
-
-        for (Board board : boardList) {
-            // 댓글리스트 작성일자 기준 내림차순 정렬
-            board.getCommentList()
-                    .sort(Comparator.comparing(Comment::getModifiedAt)
-                            .reversed());
-
-            // 대댓글은 제외 부분 작성
-            List<CommentResponseDTO> commentList = new ArrayList<>();
-            for (Comment comment : board.getCommentList()) {
-                if (comment.getParentCommentId() == null) {
-                    commentList.add(CommentResponseDTO.from(comment));
-                }
-            }
-
-            // List<BoardResponseDto> 로 만들기 위해 board 를 BoardResponseDto 로 만들고, list 에 dto 를 하나씩 넣는다.
-            responseDtoList.add(BoardResponseDTO.from(board, commentList));
-        }
-
-        return ResponseUtils.ok(responseDtoList);
-
+    public List<BoardResponseDTO> getAllBoards() {
+        List<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc();
+        return boards.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    // 게시글 작성
-    @Transactional
-    public ApiResponseDto<BoardResponseDTO> createPost(BoardRequestDTO requestsDto, User user) {
+    public BoardResponseDTO createBoard(Long userId, BoardRequestDTO requestDTO) {
 
-        // 작성 글 저장
-        Board board = boardRepository.save(Board.of(requestsDto, user));
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // BoardResponseDto 로 변환 후 responseEntity body 에 담아 반환
-        return ResponseUtils.ok(BoardResponseDTO.from(board));
-
+        // 게시글 생성
+        Board board = new Board();
+        board.setTitle(requestDTO.getTitle());
+        board.setContent(requestDTO.getContent());
+        board.setUser(user); // 사용자 설정
+        board.setBoardType(requestDTO.getBoardType());
+        board.setCreatedAt(LocalDateTime.now());
+        board.setModifiedAt(LocalDateTime.now());
+        board.setLikes(0); // 초기 좋아요 수
+        board.setViews(0); // 초기 조회수
+        boardRepository.save(board);
+        return convertToResponseDTO(board);
     }
 
-    // 선택된 게시글 조회
-    @Transactional(readOnly = true)
-    public ApiResponseDto<BoardResponseDTO> getPost(Long id) {
-        // Id에 해당하는 게시글이 있는지 확인
-        Optional<Board> board = boardRepository.findById(id);
-        if (board.isEmpty()) { // 해당 게시글이 없다면
-            throw new RestApiException(ErrorType.NOT_FOUND_WRITING);
-        }
-
-        // 댓글리스트 작성일자 기준 내림차순 정렬
-        board.get()
-                .getCommentList()
-                .sort(Comparator.comparing(Comment::getModifiedAt)
-                        .reversed());
-
-        // 대댓글은 제외 부분 작성
-        List<CommentResponseDTO> commentList = new ArrayList<>();
-        for (Comment comment : board.get().getCommentList()) {
-            if (comment.getParentCommentId() == null) {
-                commentList.add(CommentResponseDTO.from(comment));
-            }
-        }
-
-        // board 를 responseDto 로 변환 후, ResponseEntity body 에 dto 담아 리턴
-        return ResponseUtils.ok(BoardResponseDTO.from(board.get(), commentList));
+    public Optional<BoardResponseDTO> getBoard(Long id) {
+        return boardRepository.findById(id).map(board -> {
+            board.setViews(board.getViews() + 1); // 조회수 증가
+            boardRepository.save(board); // 업데이트
+            return convertToResponseDTO(board);
+        });
     }
 
-    // 선택된 게시글 수정
-    @Transactional
-    public ApiResponseDto<BoardResponseDTO> updatePost(Long id, BoardRequestDTO requestsDto, User user) {
-
-        // 선택한 게시글이 DB에 있는지 확인
-        Optional<Board> board = boardRepository.findById(id);
-        if (board.isEmpty()) {
-            throw new RestApiException(ErrorType.NOT_FOUND_WRITING);
-        }
-
-        // 선택한 게시글의 작성자와 토큰에서 가져온 사용자 정보가 일치하는지 확인 (수정하려는 사용자가 관리자라면 게시글 수정 가능)
-        Optional<Board> found = boardRepository.findByIdAndUser(id, user);
-        if (found.isEmpty() && user.getRole() == UserRoleEnum.USER) { // 일치하는 게시물이 없다면
-            throw new RestApiException(ErrorType.NOT_WRITER);
-        }
-
-        // 게시글 id 와 사용자 정보 일치한다면, 게시글 수정
-        board.get().update(requestsDto, user);
-        boardRepository.flush(); // responseDto 에 modifiedAt 업데이트 해주기 위해 flush 사용
-
-        return ResponseUtils.ok(BoardResponseDTO.from(board.get()));
-
+    public Optional<BoardResponseDTO> updateBoard(Long id, BoardRequestDTO requestDTO) {
+        return boardRepository.findById(id).map(board -> {
+            board.setTitle(requestDTO.getTitle());
+            board.setContent(requestDTO.getContent());
+            board.setBoardType(requestDTO.getBoardType());
+            board.setModifiedAt(LocalDateTime.now());
+            boardRepository.save(board);
+            return convertToResponseDTO(board);
+        });
     }
 
-    // 게시글 삭제
-    @Transactional
-    public ApiResponseDto<SuccessResponse> deletePost(Long id, User user) {
-
-        // 선택한 게시글이 DB에 있는지 확인
-        Optional<Board> found = boardRepository.findById(id);
-        if (found.isEmpty()) {
-            throw new RestApiException(ErrorType.NOT_FOUND_WRITING);
-        }
-
-        // 선택한 게시글의 작성자와 토큰에서 가져온 사용자 정보가 일치하는지 확인 (삭제하려는 사용자가 관리자라면 게시글 삭제 가능)
-        Optional<Board> board = boardRepository.findByIdAndUser(id, user);
-        if (board.isEmpty() && user.getRole() == UserRoleEnum.USER) { // 일치하는 게시물이 없다면
-            throw new RestApiException(ErrorType.NOT_WRITER);
-        }
-
-        // 게시글 id 와 사용자 정보 일치한다면, 게시글 수정
+    public void deleteBoard(Long id) {
         boardRepository.deleteById(id);
-        return ResponseUtils.ok(SuccessResponse.of(HttpStatus.OK, "게시글 삭제 성공"));
-
     }
 
-//    //조회수
-//    @Transactional
-//    public void viewCountUp(Long boardId){
-//        Board board = findById(boardId);
-//        board.viewCountUp(board);
+    public CommentResponseDTO addComment(Long boardId, CommentRequestDTO commentRequestDTO) {
+        // 게시글 조회
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+
+        // 댓글 생성
+        Comment newComment = new Comment();
+        newComment.setContent(commentRequestDTO.getContent());
+        newComment.setBoard(board);
+        newComment.setCreatedAt(LocalDateTime.now());
+
+        // 댓글 저장
+        Comment savedComment = commentRepository.save(newComment);
+        return convertToResponseDTO(savedComment);
+    }
+
+    public CommentResponseDTO addReply(Long boardId, CommentRequestDTO commentRequestDTO) {
+        // 게시글 조회
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+
+        // 사용자 조회 (이름으로 사용자 찾기)
+        User user = userRepository.findByUsername(commentRequestDTO.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        // 부모 댓글 조회
+        Comment parentComment = commentRepository.findById(commentRequestDTO.getParentId())
+                .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+
+        // 대댓글 생성
+        Comment replyComment = new Comment();
+        replyComment.setContent(commentRequestDTO.getContent());
+        replyComment.setBoard(board);
+        replyComment.setParentComment(parentComment); // 부모 댓글 설정
+        replyComment.setCreatedAt(LocalDateTime.now());
+
+        // 대댓글 저장
+        Comment savedReply = commentRepository.save(replyComment);
+        return convertToResponseDTO(savedReply);
+    }
+
+    public void likeBoard(Long id) {
+        boardRepository.findById(id).ifPresent(board -> {
+            board.setLikes(board.getLikes() + 1); // 좋아요 수 증가
+            boardRepository.save(board);
+        });
+    }
+
+    // 게시글에서 댓글 불러오기 위한 기능
+//    private List<CommentResponseDTO> getCommentsForBoard(Board board) {
+//        return board.getCommentList().stream()
+//                .map(comment -> new CommentResponseDTO(comment.getId(), comment.getContent(),comment.getUser().getUsername(), comment.getCreatedAt(), comment.getParentComment() != null ? comment.getParentComment().getId() : null))
+//                .collect(Collectors.toList());
 //    }
 
+    private BoardResponseDTO convertToResponseDTO(Board board) {
+        return BoardResponseDTO.builder()
+                .id(board.getId())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .boardType(board.getBoardType())
+                .createdAt(board.getCreatedAt())
+                .modifiedAt(board.getModifiedAt())
+                .likes(board.getLikes())
+                .views(board.getViews())
+                .username(board.getUser().getUsername())
+//                .commentResponseDTOList(getCommentsForBoard(board))
+                .build();
+    }
+
+    private CommentResponseDTO convertToResponseDTO(Comment comment) {
+        return CommentResponseDTO.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .parentId(comment.getParentComment().getId())
+                .createdAt(comment.getCreatedAt())
+                .build();
+    }
 }

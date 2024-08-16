@@ -1,26 +1,23 @@
 package com.exchangeBE.exchange.entity;
 
-import com.exchangeBE.exchange.dto.BoardRequestDTO;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 @Entity
-@DynamicInsert
-@DynamicUpdate
 @Table(name = "board")
-public class Board extends Timestamped {
+public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,50 +27,35 @@ public class Board extends Timestamped {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "hash_tag")
-    private String hashTag;
-
     @Column(name = "content", nullable = false)
     private String content;
 
     @ColumnDefault("0")
-    @Column(name = "view_count",nullable = false)
-    private Integer viewCount;
+    @Column(name = "view_count", nullable = false)
+    private Integer views;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ColumnDefault("0")
+    @Column(name = "like_count", nullable = false)
+    private Integer likes;
+
+
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
-    private List<Comment> commentList = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private BoardType boardType;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
-    private List<Likes> likesList = new ArrayList<>();
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @Builder
-    private Board(BoardRequestDTO requestsDto, User user) {
-        this.title = requestsDto.getTitle();
-        this.content = requestsDto.getContent();
-        this.user = user;
-    }
+    @LastModifiedDate
+    private LocalDateTime modifiedAt;
 
-    public void update(BoardRequestDTO requestsDto, User user) {
-        this.title = requestsDto.getTitle();
-        this.content = requestsDto.getContent();
-        this.user = user;
-        this.hashTag = requestsDto.getHashTag();
-    }
-
-    public static Board of(BoardRequestDTO requestsDto, User user) {
-        return Board.builder()
-                .requestsDto(requestsDto)
-                .user(user)
-                .build();
-    }
-
-    public void viewCountUp(Board board) {
-        board.viewCount++;
-    }
 
 }
+
+

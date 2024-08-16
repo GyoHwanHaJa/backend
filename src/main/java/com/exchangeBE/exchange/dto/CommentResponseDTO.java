@@ -1,35 +1,25 @@
 package com.exchangeBE.exchange.dto;
 
-import com.exchangeBE.exchange.entity.Comment;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@Builder
 public class CommentResponseDTO {
     private Long id;
     private String content;
     private String username;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private List<CommentResponseDTO> childCommentList;
+    private Long parentId; // 대댓글의 경우 부모 댓글 ID
 
-    @Builder
-    private CommentResponseDTO(Comment entity) {
-        this.id = entity.getId();
-        this.content = entity.getContent();
-        this.username = entity.getUser().getUsername();
-        this.createdAt = entity.getCreatedAt();
-        this.modifiedAt = entity.getModifiedAt();
-        this.childCommentList = entity.getChildCommentList().stream().map(CommentResponseDTO::from).toList();
+    public CommentResponseDTO(Long id, String content, String username, LocalDateTime createdAt, Long parentId) {
+        this.id = id;
+        this.content = content;
+        this.username = username;
+        this.createdAt = createdAt;
+        this.parentId = parentId;
     }
-
-    public static CommentResponseDTO from(Comment entity) {
-        return CommentResponseDTO.builder()
-                .entity(entity)
-                .build();
-    }
-
 }
