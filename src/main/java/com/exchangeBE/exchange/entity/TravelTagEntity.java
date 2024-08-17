@@ -23,11 +23,6 @@ public class TravelTagEntity {
     @JoinColumn(name = "travel_post_id", nullable = false)
     private TravelEntity travelPost;
 
-    //@Column(nullable = false)
-    //private String country;
-
-    //@Column
-    //private String location;
 
     @Column(nullable = false)
     private String subject; // cost-effectiveness, local, must-eat, restaurant, history
@@ -44,17 +39,13 @@ public class TravelTagEntity {
     @JoinColumn(name = "country_id")  // 외래 키 이름 설정
     private CountryEntity country;
 
-    // Place 정보는 엔티티가 아니므로, 문자열로 저장
-    //private String placeName;
 
+    // Place 정보는 엔티티가 아니므로, 문자열로 저장
     @Column(name = "place_name")
     private String placeName;
 
-    @Column(name = "place_city")
-    private String placeCity;
 
-    @Column(name = "place_type")
-    private String placeType;
+
 
 
 }

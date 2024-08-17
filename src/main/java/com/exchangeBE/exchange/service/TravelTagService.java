@@ -33,25 +33,15 @@ public class TravelTagService {
         TravelEntity travelPost = travelRepository.findById(travelTagDto.getTravelPostId())
                 .orElseThrow(() -> new RuntimeException("Travel post not found"));
 
-        // CountryEntity를 조회
-       // CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
-         //       .orElseThrow(() -> new RuntimeException("Country not found"));
+        // CountryEntity를 조회하여 설정
+        CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
+                .orElseThrow(() -> new RuntimeException("Country not found"));
 
 
         TravelTagEntity tagEntity = new TravelTagEntity();
 
         tagEntity.setTravelPost(travelPost);
-
-
-
-        // CountryDto에서 이름을 가져와서 설정
-        CountryEntity country = new CountryEntity();
-        country.setName(travelTagDto.getCountry().getName());
         tagEntity.setCountry(country);  // 조회된 CountryEntity 설정
-
-        // PlaceDto에서 이름 추출하여 설정
-        String placeName = travelTagDto.getPlace().getName();
-        tagEntity.setPlaceName(placeName);
 
 
 
@@ -89,13 +79,8 @@ public class TravelTagService {
         }
         dto.setCountry(countryDto);
 
-        // PlaceDto를 생성하고 추가 정보를 설정
-        PlaceDto placeDto = new PlaceDto(
-                tagEntity.getPlaceName(), // placeName을 name으로 설정
-                tagEntity.getPlaceCity(), // placeCity를 city로 설정
-                tagEntity.getPlaceType()  // placeType을 type으로 설정
-        );
-
+        // PlaceDto를 생성하고 이름만 설정
+        PlaceDto placeDto = new PlaceDto(tagEntity.getPlaceName());
         dto.setPlace(placeDto);
 
         return dto;
