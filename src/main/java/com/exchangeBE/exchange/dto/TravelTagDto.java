@@ -1,5 +1,7 @@
 package com.exchangeBE.exchange.dto;
 
+import com.exchangeBE.exchange.dto.CountryDto;
+import com.exchangeBE.exchange.dto.PlaceDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,9 +14,12 @@ import java.time.LocalDateTime;
 public class TravelTagDto {
     private Long id;
     private Long travelPostId;
-    private String country;
-    private String location;
+
+    private CountryDto country; // CountryDto를 추가
+    //private String placeName;  // PlaceName을 문자열로 추가
     private String subject;
     private LocalDateTime travelDateStart;
     private LocalDateTime travelDateEnd;
+
+    private PlaceDto place;     // PlaceDto 포함
 }
