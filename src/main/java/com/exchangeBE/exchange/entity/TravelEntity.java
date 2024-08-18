@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -42,7 +44,7 @@ public class TravelEntity {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "travelPost", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TravelTagEntity> tags; // 추가된 부분: TravelTagEntity와의 관계 설정
+    private List<TravelTagEntity> tags = new ArrayList<>(); // 필드 초기화
 
     @PrePersist
     protected void onCreate() {
@@ -67,5 +69,9 @@ public class TravelEntity {
         if (this.likes > 0) {
             this.likes -= 1;
         }
+    }
+
+    public List<TravelTagEntity> getTags() {
+        return tags != null ? tags : Collections.emptyList();
     }
 }

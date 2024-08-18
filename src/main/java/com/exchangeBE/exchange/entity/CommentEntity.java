@@ -26,8 +26,8 @@ public class CommentEntity {
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_post_id", nullable = false) // 수정된 부분
-    private TravelEntity travelPost; // TripPostEntity -> TravelEntity로 변경
+    @JoinColumn(name = "travel_post_id", nullable = false)
+    private TravelEntity travelPost;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
