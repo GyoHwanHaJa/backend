@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/countries")
+@RequestMapping("/api/countries")
 public class CountryController {
     @Autowired
     private CountryService countryService;

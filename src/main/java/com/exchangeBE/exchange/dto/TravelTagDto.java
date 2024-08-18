@@ -16,7 +16,7 @@ public class TravelTagDto {
     private Long travelPostId;
 
     private CountryDto country; // CountryDto를 추가
-    //private String placeName;  // PlaceName을 문자열로 추가
+
     private String subject;
     private LocalDateTime travelDateStart;
     private LocalDateTime travelDateEnd;
