@@ -1,38 +1,26 @@
 package com.exchangeBE.exchange.dto;
 
-import com.exchangeBE.exchange.entity.Schedule.Schedule;
-import com.exchangeBE.exchange.entity.Schedule.ScheduleTag;
-import com.exchangeBE.exchange.entity.User;
-import lombok.*;
+import com.exchangeBE.exchange.entity.Schedule.RecurrenceType;
+import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
-
-@Getter
-@Setter
-public class ScheduleDto {
+@Data
+public class ScheduleDTO {
     private Long id;
-    private User user;
     private String scheduleName;
     private String scheduleDescription;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private RecurrenceDto recurrenceDto;
-    private Set<ScheduleTag> scheduleTags;
+    private ZonedDateTime startTime;
+    private ZonedDateTime endTime;
+    private Set<String> tagNames;
+    private RecurrenceDTO recurrence;
 
-    public static ScheduleDto toScheduleDto(Schedule schedule) {
-        ScheduleDto scheduleDto = new ScheduleDto();
-
-        scheduleDto.setId(schedule.getId());
-        scheduleDto.setUser(schedule.getUser());
-        scheduleDto.setScheduleName(schedule.getScheduleName());
-        scheduleDto.setScheduleDescription(schedule.getScheduleDescription());
-        scheduleDto.setStartTime(schedule.getStartTime());
-        scheduleDto.setEndTime(schedule.getEndTime());
-        scheduleDto.setRecurrenceDto(RecurrenceDto.toRecurrenceDto(schedule.getRecurrence()));
-        scheduleDto.setScheduleTags(schedule.getScheduleTags());
-
-        return scheduleDto;
+    @Data
+    public static class RecurrenceDTO {
+        private RecurrenceType type;
+        private Set<DayOfWeek> daysOfWeek;
+        private Integer recurrenceInterval;
     }
 }

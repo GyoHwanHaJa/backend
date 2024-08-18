@@ -1,93 +1,60 @@
 package com.exchangeBE.exchange.controller;
 
-import com.exchangeBE.exchange.DynamicResponseBuilder;
-import com.exchangeBE.exchange.dto.*;
+import com.exchangeBE.exchange.dto.ScheduleCreateDTO;
+import com.exchangeBE.exchange.dto.ScheduleDTO;
+import com.exchangeBE.exchange.entity.Schedule.Schedule;
+
 import com.exchangeBE.exchange.service.schedule.ScheduleService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-import java.util.Set;
+import java.time.ZonedDateTime;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/schedule")
-@Tag(name = "안녕", description = "하세요")
+@RequestMapping("/api/schedules")
+@RequiredArgsConstructor
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    public ScheduleController(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
+    @PostMapping
+    public Schedule createSchedule(@RequestBody ScheduleCreateDTO dto) {
+        scheduleService.createOrUpdateSchedule(dto);
+        return null;
     }
 
-    /* 여행 기록 */
-    @GetMapping("/history/{userId}")
-    @ResponseBody
-    public ResponseEntity<?> getMainPage(@PathVariable Long userId,
-                                         @RequestBody MainPageRequestDto mainPageRequestDto) {
-        Integer year = mainPageRequestDto.getYear();
-        Integer month = mainPageRequestDto.getMonth();
-        Integer day = mainPageRequestDto.getDay();
-
-        MainPageDto mainPageDto = scheduleService.getMainPage(userId, year, month, day);
-        return ResponseEntity.status(HttpStatus.OK).body(mainPageDto);
-    }
-
-    /* 일정 단 건 조회 */
-    @GetMapping("/{userId}")
-    @ResponseBody
-    public ResponseEntity<?> getSchedule(@PathVariable Long userId) {
-        try {
-            ScheduleDto scheduleDto = scheduleService.readSchedule(userId);
-
-            if (scheduleDto == null) {
-                return ResponseEntity.notFound().build();
-            }
-
-            Map<String, Object> response = DynamicResponseBuilder.buildResponse(
-                    "scheduleName", scheduleDto.getScheduleName(),
-                    "scheduleDescription", scheduleDto.getScheduleDescription(),
-                    "startTime", scheduleDto.getStartTime(),
-                    "endTime", scheduleDto.getEndTime()
-            );
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("에러가 발생했습니다: " + e.getMessage());
-        }
-    }
-
-    /* 일정 추가 */
-    @PostMapping("/{userId}")
-    @ResponseBody
-    public ResponseEntity<?> createSchedule(@PathVariable Long userId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
-
-        ScheduleDto scheduleDto = scheduleRequestDto.getScheduleDto();
-        RecurrenceDto recurrenceDto = scheduleRequestDto.getRecurrenceDto();
-        Set<TagDto> tagDto = scheduleRequestDto.getTagDto();
-
-
-        scheduleService.createSchedule(userId, scheduleDto, recurrenceDto, tagDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    /* 일정 수정 */
     @PutMapping("/{scheduleId}")
-    public ResponseEntity<?> updateSchedule(@PathVariable Long scheduleId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
-        ScheduleDto scheduleDto = scheduleRequestDto.getScheduleDto();
-        RecurrenceDto recurrenceDto = scheduleRequestDto.getRecurrenceDto();
-        Set<TagDto> tagDto = scheduleRequestDto.getTagDto();
-
-        ScheduleDto updatedScheduleDto = scheduleService.updateSchedule(scheduleId, scheduleDto, recurrenceDto, tagDto);
-
-        return ResponseEntity.ok(updatedScheduleDto);
+    public Schedule updateSchedule(@RequestBody ScheduleCreateDTO dto, @PathVariable Long scheduleId) {
+        dto.setScheduleId(scheduleId);
+        scheduleService.createOrUpdateSchedule(dto);
+        return null;
     }
 
-    /* 일정 삭제 */
     @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<?> deleteSchedule(@PathVariable Long scheduleId) {
+    public void deleteSchedule(@PathVariable Long scheduleId) {
         scheduleService.deleteSchedule(scheduleId);
-        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ScheduleDTO> getScheduleById(@PathVariable Long id) {
+        ScheduleDTO scheduleDTO = scheduleService.getScheduleDTOById(id);
+        return ResponseEntity.ok(scheduleDTO);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ScheduleDTO>> getSchedulesByUserId(@PathVariable Long userId) {
+        List<ScheduleDTO> scheduleDTOs = scheduleService.getScheduleDTOsByUserId(userId);
+        return ResponseEntity.ok(scheduleDTOs);
+    }
+
+    @GetMapping("/user/{userId}/range")
+    public ResponseEntity<List<ScheduleDTO>> getSchedulesByDateRange(
+            @PathVariable Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime endDate) {
+        List<ScheduleDTO> scheduleDTOs = scheduleService.getScheduleDTOsByDateRange(userId, startDate, endDate);
+        return ResponseEntity.ok(scheduleDTOs);
     }
 }

@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScheduleTagRepository extends JpaRepository<ScheduleTag, Long> {
     ScheduleTag findBySchedule(Schedule schedule);
+    void deleteBySchedule(Schedule schedule);
 }

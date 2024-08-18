@@ -1,33 +1,38 @@
 package com.exchangeBE.exchange.entity.Schedule;
 
-import com.exchangeBE.exchange.dto.TagDto;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@ToString(exclude = "scheduleTags")
+@EqualsAndHashCode(of = "id")
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @Size(max = 255)
+    @Column(unique = true)
     private String name;
-    private Boolean isCustom;
 
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<ScheduleTag> scheduleTags = new HashSet<>();
 
-    public static Tag toTagEntity(TagDto tagDto) {
-        Tag tag = new Tag();
+    // Helper methods for bidirectional relationship management
+    public void addScheduleTag(ScheduleTag scheduleTag) {
+        scheduleTags.add(scheduleTag);
+        scheduleTag.setTag(this);
+    }
 
-        tag.setId(tagDto.getId());
-        tag.setName(tagDto.getName());
-        tag.setIsCustom(tagDto.getIsCustom());
-
-        return tag;
+    public void removeScheduleTag(ScheduleTag scheduleTag) {
+        scheduleTags.remove(scheduleTag);
+        scheduleTag.setTag(null);
     }
 }
