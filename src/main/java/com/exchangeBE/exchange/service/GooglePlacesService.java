@@ -1,5 +1,8 @@
 package com.exchangeBE.exchange.service;
 
+import com.exchangeBE.exchange.entity.PlaceEntity;
+import com.exchangeBE.exchange.repository.PlaceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.BufferedReader;
@@ -25,6 +28,17 @@ import java.util.List;
 public class GooglePlacesService {
     @Value("${google.maps.api.key}")
     private String apiKey;
+
+    @Autowired
+    private PlaceRepository placeRepository;
+
+    public PlaceEntity savePlace(PlaceEntity place) {
+        return placeRepository.save(place);
+    }
+
+    public List<PlaceEntity> getAllPlaces() {
+        return placeRepository.findAll();
+    }
 
     public String findPlaceFromText(String query) {
         StringBuilder resultBuilder = new StringBuilder();

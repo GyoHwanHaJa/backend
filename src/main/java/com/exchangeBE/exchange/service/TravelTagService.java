@@ -4,9 +4,11 @@ import com.exchangeBE.exchange.dto.CountryDto;
 import com.exchangeBE.exchange.dto.PlaceDto;
 import com.exchangeBE.exchange.dto.TravelTagDto;
 import com.exchangeBE.exchange.entity.CountryEntity;
+import com.exchangeBE.exchange.entity.PlaceEntity;
 import com.exchangeBE.exchange.entity.TravelEntity;
 import com.exchangeBE.exchange.entity.TravelTagEntity;
 import com.exchangeBE.exchange.repository.CountryRepository;
+import com.exchangeBE.exchange.repository.PlaceRepository;
 import com.exchangeBE.exchange.repository.TravelRepository;
 import com.exchangeBE.exchange.repository.TravelTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class TravelTagService {
     @Autowired
     private CountryRepository countryRepository;
 
+    @Autowired
+    private PlaceRepository placeRepository;
+
     public TravelTagDto createTravelTag(TravelTagDto travelTagDto) {
         TravelEntity travelPost = travelRepository.findById(travelTagDto.getTravelPostId())
                 .orElseThrow(() -> new RuntimeException("Travel post not found"));
@@ -36,6 +41,14 @@ public class TravelTagService {
         // CountryEntity를 조회하여 설정
         CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
                 .orElseThrow(() -> new RuntimeException("Country not found"));
+
+        // PlaceEntity를 조회하거나 새로 생성하여 설정
+        PlaceEntity place = placeRepository.findByName(travelTagDto.getPlace().getName())
+                .orElseGet(() -> {
+                    PlaceEntity newPlace = new PlaceEntity();
+                    newPlace.setName(travelTagDto.getPlace().getName());
+                    return placeRepository.save(newPlace); // 새로 생성된 PlaceEntity를 저장
+                });
 
 
         TravelTagEntity tagEntity = new TravelTagEntity();
@@ -73,15 +86,15 @@ public class TravelTagService {
         CountryDto countryDto = new CountryDto();
         CountryEntity country = tagEntity.getCountry();
         if (country != null) {
-            countryDto.setId(country.getId());
+            // name 필드만 설정
             countryDto.setName(country.getName());
-            countryDto.setRegion(country.getRegion());
         }
         dto.setCountry(countryDto);
 
         // PlaceDto를 생성하고 이름만 설정
         PlaceDto placeDto = new PlaceDto(tagEntity.getPlaceName());
         dto.setPlace(placeDto);
+
 
         return dto;
     }

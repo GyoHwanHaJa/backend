@@ -108,9 +108,9 @@ public class TravelService {
                     // Country 설정
                     CountryDto countryDto = new CountryDto();
                     if (tag.getCountry() != null) {
-                        countryDto.setId(tag.getCountry().getId());
+
                         countryDto.setName(tag.getCountry().getName());
-                        countryDto.setRegion(tag.getCountry().getRegion());
+
                     }
                     tagDto.setCountry(countryDto);
 
