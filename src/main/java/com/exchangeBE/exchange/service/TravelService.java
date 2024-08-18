@@ -1,8 +1,12 @@
 package com.exchangeBE.exchange.service;
 
+import com.exchangeBE.exchange.dto.CountryDto;
+import com.exchangeBE.exchange.dto.PlaceDto;
 import com.exchangeBE.exchange.dto.TravelDto;
 import com.exchangeBE.exchange.dto.TravelTagDto;
+import com.exchangeBE.exchange.entity.CountryEntity;
 import com.exchangeBE.exchange.entity.TravelEntity;
+import com.exchangeBE.exchange.entity.TravelTagEntity;
 import com.exchangeBE.exchange.repository.TravelRepository;
 import com.exchangeBE.exchange.repository.TravelTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,13 +99,26 @@ public class TravelService {
         dto.setCreatedAt(travel.getCreatedAt());
         dto.setUpdatedAt(travel.getUpdatedAt());
 
+
         // 추가된 부분: 태그 정보를 TravelDto로 변환하여 포함
         List<TravelTagDto> tags = travel.getTags().stream()
                 .map(tag -> {
                     TravelTagDto tagDto = new TravelTagDto();
                     tagDto.setId(tag.getId());
-                    tagDto.setCountry(tag.getCountry());
-                    tagDto.setLocation(tag.getLocation());
+                    // Country 설정
+                    CountryDto countryDto = new CountryDto();
+                    if (tag.getCountry() != null) {
+
+                        countryDto.setName(tag.getCountry().getName());
+
+                    }
+                    tagDto.setCountry(countryDto);
+
+                    // Place 설정
+                    PlaceDto placeDto = new PlaceDto(tag.getPlaceName());
+                    tagDto.setPlace(placeDto);
+
+
                     tagDto.setSubject(tag.getSubject());
                     tagDto.setTravelDateStart(tag.getTravelDateStart());
                     tagDto.setTravelDateEnd(tag.getTravelDateEnd());
