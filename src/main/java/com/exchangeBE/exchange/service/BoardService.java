@@ -3,6 +3,7 @@ package com.exchangeBE.exchange.service;
 
 import com.exchangeBE.exchange.dto.BoardRequestDTO;
 import com.exchangeBE.exchange.dto.BoardResponseDTO;
+import com.exchangeBE.exchange.dto.HotBoardResponseDTO;
 import com.exchangeBE.exchange.entity.Board;
 import com.exchangeBE.exchange.entity.User;
 import com.exchangeBE.exchange.repository.BoardRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -89,13 +91,7 @@ public class BoardService {
         board.setLikes(board.getLikes() + 1);
         boardRepository.save(board);
 
-//        // BoardResponseDTO 생성 및 필드 설정
-//        BoardResponseDTO responseDTO = new BoardResponseDTO();
-//        responseDTO.setId(board.getId());
-//        responseDTO.setTitle(board.getTitle());
-//        responseDTO.setContent(board.getContent());
-//        responseDTO.setScrap(board.getScrap());
-//        responseDTO.setLikes(board.getLikes());
+
 
         return convertToResponseDTO(board);
     }
@@ -107,14 +103,6 @@ public class BoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         board.setScrap(board.getScrap() + 1);
         boardRepository.save(board);
-
-//        // BoardResponseDTO 생성 및 필드 설정
-//        BoardResponseDTO responseDTO = new BoardResponseDTO();
-//        responseDTO.setId(board.getId());
-//        responseDTO.setTitle(board.getTitle());
-//        responseDTO.setContent(board.getContent());
-//        responseDTO.setScrap(board.getScrap());
-//        responseDTO.setLikes(board.getLikes());
 
         return convertToResponseDTO(board);
     }
@@ -143,6 +131,32 @@ public class BoardService {
 
         return convertToResponseDTO(board);
     }
+
+    // HOT 게시물
+    public List<HotBoardResponseDTO> getHotBoards() {
+        // 최신순 정렬
+        List<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc();
+
+        // Hot 게시물 점수 계산
+        List<HotBoardResponseDTO> hotBoards = boards.stream()
+                .map(board -> {
+                    int hotScore = board.getViews() + (board.getScrap() * 10);
+                    return new HotBoardResponseDTO(
+                            board.getId(),
+                            board.getTitle(),
+                            board.getUser().getNickname(),
+                            board.getViews(),
+                            board.getScrap(),
+                            hotScore
+                    );
+                })
+                .sorted(Comparator.comparingInt(HotBoardResponseDTO::getHotScore).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+
+        return hotBoards;
+    }
+
 
 
 

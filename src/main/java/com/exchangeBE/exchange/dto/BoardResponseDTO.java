@@ -18,7 +18,6 @@ public class BoardResponseDTO {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-//    private List<CommentResponseDTO> comments;
     private BoardType boardType;
     private Integer likes; // 좋아요 수
     private Integer views; // 조회수
