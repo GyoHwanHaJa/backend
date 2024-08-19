@@ -57,9 +57,17 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
+            #현재 실행 중인 컨테이너 확인
+            echo "현재 실행 중인 컨테이너:"
+            sudo docker ps
+            
             # 기존 컨테이너 중지 및 삭제
             sudo docker stop gyohwanhaja || true
             sudo docker rm gyohwanhaja || true
+
+            #중지 및 삭제 확인
+            echo "컨테이너 중지 및 삭제 후:"
+            sudo docker ps -a
             
             # Docker Hub에서 최신 이미지 pull
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/gyohwanhaja:latest
