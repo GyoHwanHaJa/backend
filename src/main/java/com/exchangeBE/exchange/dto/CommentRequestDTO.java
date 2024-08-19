@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CommentRequestDTO {
+    private Long userId; // 댓글 작성자 ID
     private String content;
     private Long parentId; // 대댓글의 경우 부모 댓글 ID
     private String username; // 사용자 이름

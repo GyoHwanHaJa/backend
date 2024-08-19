@@ -3,6 +3,7 @@ package com.exchangeBE.exchange.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -20,6 +21,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<Board> boards;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
 }
 

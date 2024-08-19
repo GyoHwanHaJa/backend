@@ -38,12 +38,16 @@ public class Board {
     @Column(name = "like_count", nullable = false)
     private Integer likes;
 
+    @ColumnDefault("0")
+    @Column(name = "scrap_count", nullable = false)
+    private Integer scrap; // 스크랩 횟수
+
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Comment> commentList;
 
     @Enumerated(EnumType.STRING)

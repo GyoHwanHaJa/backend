@@ -2,8 +2,6 @@ package com.exchangeBE.exchange.controller;
 
 import com.exchangeBE.exchange.dto.BoardRequestDTO;
 import com.exchangeBE.exchange.dto.BoardResponseDTO;
-import com.exchangeBE.exchange.dto.CommentRequestDTO;
-import com.exchangeBE.exchange.dto.CommentResponseDTO;
 import com.exchangeBE.exchange.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,7 @@ public class BoardController {
     // 게시글 작성
     @PostMapping("/api/post/{id}") //id는 user_id
     public ResponseEntity<BoardResponseDTO> createBoard(@PathVariable Long id, @RequestBody BoardRequestDTO requestDTO) {
-        BoardResponseDTO createdBoard = boardService.createBoard(id,requestDTO);
+        BoardResponseDTO createdBoard = boardService.createBoard(id, requestDTO);
         return ResponseEntity.ok(createdBoard);
     }
 
@@ -56,26 +54,29 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
-    // 게시물에 댓글 생성
-    @PostMapping("/api/post/{boardId}/comments")
-    public ResponseEntity<CommentResponseDTO> addComment(@PathVariable Long boardId, @RequestBody CommentRequestDTO commentRequestDTO) {
-        CommentResponseDTO comment = boardService.addComment(boardId, commentRequestDTO);
-        return ResponseEntity.ok(comment);
+
+    // 게시물에 스크랩 하는 기능
+    @PostMapping("/api/post/{boardId}/scrap")
+    public BoardResponseDTO scrapBoard(@PathVariable Long boardId) {
+        return boardService.scrapBoard(boardId);
     }
 
-    // 댓글에 대댓글 생성
-    @PostMapping("/api/post/{id}/comments/replies") //id는 board_id
-    public ResponseEntity<CommentResponseDTO> addReply(@PathVariable Long id, @RequestBody CommentRequestDTO commentRequestDTO) {
-        CommentResponseDTO createdReply = boardService.addReply(id, commentRequestDTO);
-        return ResponseEntity.ok(createdReply);
+    // 게시물 스크랩 취소 기능
+    @DeleteMapping("/api/post/{boardId}/scrap")
+    public BoardResponseDTO cancelScrapBoard(@PathVariable Long boardId) {
+        return boardService.cancelScrapBoard(boardId);
     }
 
-    // 게시물에 좋아요 기능
-    @PostMapping("/api/post/{id}/like")
-    public ResponseEntity<Void> likeBoard(@PathVariable Long id) {
-        boardService.likeBoard(id);
-        return ResponseEntity.ok().build();
+    // 게시물에 좋아요 하는 기능
+    @PostMapping("/api/post/{boardId}/like")
+    public BoardResponseDTO likeBoard(@PathVariable Long boardId) {
+        return boardService.likeBoard(boardId);
     }
 
+    // 게시물에 좋아요 취소 기능
+    @DeleteMapping("/api/post/{boardId}/like")
+    public BoardResponseDTO cancelLikeBoard(@PathVariable Long boardId) {
+        return boardService.cancelLikeBoard(boardId);
 
+    }
 }

@@ -31,20 +31,28 @@ public class Comment {
     private Board board;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    private String username; // 댓글 작성자
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private Comment parentComment; //부모 댓글
 
-    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
-    private List<Comment> replies = new ArrayList<>(); // 대댓글 리스트
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime modifiedAt;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    //. 일반적으로 @PrePersist 어노테이션을 사용하여 엔티티가 데이터베이스에 저장되기 전에 createdAt 필드를 설정할 수 있습니다.
+
+
+
+
 }
 
