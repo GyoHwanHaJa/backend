@@ -19,7 +19,4 @@ public class Occasion {
 
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
-
-    @Enumerated(EnumType.STRING)
-    private OccasionStatus status;
 }

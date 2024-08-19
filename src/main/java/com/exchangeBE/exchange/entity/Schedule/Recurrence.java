@@ -38,15 +38,4 @@ public class Recurrence {
 
     @OneToOne(mappedBy = "recurrence", cascade = CascadeType.ALL, orphanRemoval = true)
     private Schedule schedule;
-
-    // Helper methods for bidirectional relationship management
-    public void addOccasion(Occasion occasion) {
-        occasions.add(occasion);
-        occasion.setRecurrence(this);
-    }
-
-    public void removeOccasion(Occasion occasion) {
-        occasions.remove(occasion);
-        occasion.setRecurrence(null);
-    }
 }

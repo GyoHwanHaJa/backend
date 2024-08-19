@@ -20,22 +20,4 @@ public class ScheduleTag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;
-
-    // Additional fields and methods as needed
-    public void setSchedule(Schedule schedule) {
-        if (this.schedule != null) {
-            this.schedule.getScheduleTags().remove(this);
-        }
-        this.schedule = schedule;
-        if (schedule != null) {
-            schedule.getScheduleTags().add(this);
-        }
-    }
-
-    public void setTag(Tag tag) {
-        this.tag = tag;
-        if (tag != null) {
-            tag.getScheduleTags().add(this);
-        }
-    }
 }

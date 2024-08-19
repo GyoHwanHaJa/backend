@@ -33,51 +33,52 @@ public class ScheduleService {
     private final OccasionRepository occasionRepository;
     private final ScheduleTagRepository scheduleTagRepository;
 
-    @Autowired
-    private EntityManager entityManager;
-
     @Transactional
-    public Schedule createOrUpdateSchedule(ScheduleCreateDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
+    public Schedule createOrUpdateSchedule(ScheduleCreateDTO scheduleCreateDto) {
         Schedule schedule;
 
-        if (dto.getScheduleId() == null) {
+        // 제공된 유저 ID로 유저 찾음
+        User user = userRepository.findById(scheduleCreateDto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (scheduleCreateDto.getScheduleId() == null) { // 일정 등록
             schedule = new Schedule();
             schedule.setUser(user);
-        } else {
-            schedule = scheduleRepository.findById(dto.getScheduleId())
+        } else { // 일정 수정
+            schedule = scheduleRepository.findById(scheduleCreateDto.getScheduleId())
                     .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
 
-            // 기존 관계 제거
+            // -- 기존 관계 제거 --
+            // 반복 관계 제거
             if (schedule.getRecurrence() != null) {
-                Recurrence recurrence = schedule.getRecurrence();
+//                Recurrence recurrence = schedule.getRecurrence();
+//                schedule.setRecurrence(null);
+//                recurrenceRepository.delete(recurrence);
+                recurrenceRepository.delete(schedule.getRecurrence());
                 schedule.setRecurrence(null);
-                recurrenceRepository.delete(recurrence);
             }
-
+            // 태그 관계 제거
             if (schedule.getScheduleTags() != null) {
                 schedule.getScheduleTags().clear();
                 scheduleTagRepository.deleteBySchedule(schedule);
             }
         }
 
-        // 업데이트
-        updateScheduleInfo(schedule, dto);
+        // 일정 객체 새로운 값으로 설정
+        updateScheduleInfo(schedule, scheduleCreateDto);
 
-        // Schedule을 먼저 저장
+        // 일정 객체 저장
         schedule = scheduleRepository.save(schedule);
 
         // 반복 설정 되어 있는 경우
-        if (dto.getRecurrence() != null) {
-            Recurrence recurrence = createRecurrence(dto.getRecurrence(), schedule);
+        if (scheduleCreateDto.getRecurrence() != null) {
+            Recurrence recurrence = createRecurrence(scheduleCreateDto.getRecurrence(), schedule);
             schedule.setRecurrence(recurrence);
         }
 
         // 태그 존재할 경우
-        if (dto.getTagNames() != null && !dto.getTagNames().isEmpty()) {
-            Set<ScheduleTag> scheduleTags = createScheduleTags(dto.getTagNames(), schedule);
+        if (scheduleCreateDto.getTagNames() != null && !scheduleCreateDto.getTagNames().isEmpty()) {
+            Set<ScheduleTag> scheduleTags = createScheduleTags(scheduleCreateDto.getTagNames(), schedule);
             schedule.setScheduleTags(scheduleTags);
         }
 
@@ -87,36 +88,38 @@ public class ScheduleService {
         return schedule;
     }
 
+    private void updateScheduleInfo(Schedule schedule, ScheduleCreateDTO scheduleCreateDto) {
+        schedule.setScheduleName(scheduleCreateDto.getScheduleName());
+        schedule.setScheduleDescription(scheduleCreateDto.getScheduleDescription());
+        schedule.setStartTime(scheduleCreateDto.getStartTime());
+        schedule.setEndTime(scheduleCreateDto.getEndTime());
+    }
+
     public void deleteSchedule(Long scheduleId) {
         scheduleRepository.deleteById(scheduleId);
     }
 
 
-    private Recurrence createRecurrence(RecurrenceCreateDTO dto, Schedule schedule) {
-        // 반복되는 정보를 먼저 설정
+    private Recurrence createRecurrence(RecurrenceCreateDTO recurrenceCreateDto, Schedule schedule) {
 
         Recurrence recurrence = Recurrence.builder()
-                .type(dto.getType())
-                .daysOfWeek(dto.getDaysOfWeek())
-                .recurrenceInterval(dto.getRecurrenceInterval())
+                .type(recurrenceCreateDto.getType())
+                .daysOfWeek(recurrenceCreateDto.getDaysOfWeek())
+                .recurrenceInterval(recurrenceCreateDto.getRecurrenceInterval())
                 .build();
 
-        recurrence = recurrenceRepository.save(recurrence);  // 먼저 Recurrence를 저장
+        // 반복 정보 저장
+        recurrence = recurrenceRepository.save(recurrence);
 
-        // 반복일들을 설정
-        Set<Occasion> occasions = generateOccasions(schedule, recurrence, dto.getRecurrenceEndDate());
+        // 반복되는 날짜 생성
+        Set<Occasion> occasions = generateOccasions(schedule, recurrence, recurrenceCreateDto.getRecurrenceEndDate());
         occasions = new HashSet<>(occasionRepository.saveAll(occasions));  // Occasion들을 저장
         recurrence.setOccasions(occasions);
 
         return recurrenceRepository.save(recurrence);  // 업데이트된 Recurrence를 다시 저장
     }
 
-    private void updateScheduleInfo(Schedule schedule, ScheduleCreateDTO dto) {
-        schedule.setScheduleName(dto.getScheduleName());
-        schedule.setScheduleDescription(dto.getScheduleDescription());
-        schedule.setStartTime(dto.getStartTime());
-        schedule.setEndTime(dto.getEndTime());
-    }
+
 
     private boolean isOccasionDay(ZonedDateTime date, Recurrence recurrence) {
         switch (recurrence.getType()) {
@@ -163,7 +166,6 @@ public class ScheduleService {
                         .recurrence(recurrence)
                         .startTime(recurrenceStart)
                         .endTime(occasionEndTime)
-                        .status(OccasionStatus.SCHEDULED)
                         .build();
 
                 boolean added = occasions.add(occasion);
@@ -219,15 +221,15 @@ public class ScheduleService {
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
     }
 
-    public List<Schedule> getSchedulesByUserId(Long userId) {
-        return scheduleRepository.findByUserId(userId);
-    }
+//    public List<Schedule> getSchedulesByUserId(Long userId) {
+//        return scheduleRepository.findByUserId(userId);
+//    }
+//
+//    public List<Schedule> getSchedulesByDateRange(Long userId, ZonedDateTime startDate, ZonedDateTime endDate) {
+//        return scheduleRepository.findByUserIdAndStartTimeBetween(userId, startDate, endDate);
+//    }
 
-    public List<Schedule> getSchedulesByDateRange(Long userId, ZonedDateTime startDate, ZonedDateTime endDate) {
-        return scheduleRepository.findByUserIdAndStartTimeBetween(userId, startDate, endDate);
-    }
-
-    public ScheduleDTO convertToDTO(Schedule schedule) {
+    public ScheduleDTO toScheduleDto(Schedule schedule) {
         ScheduleDTO dto = new ScheduleDTO();
         dto.setId(schedule.getId());
         dto.setScheduleName(schedule.getScheduleName());
@@ -252,16 +254,16 @@ public class ScheduleService {
 
     public ScheduleDTO getScheduleDTOById(Long scheduleId) {
         Schedule schedule = getScheduleById(scheduleId);
-        return convertToDTO(schedule);
+        return toScheduleDto(schedule);
     }
 
-    public List<ScheduleDTO> getScheduleDTOsByUserId(Long userId) {
-        List<Schedule> schedules = getSchedulesByUserId(userId);
-        return schedules.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
-
-    public List<ScheduleDTO> getScheduleDTOsByDateRange(Long userId, ZonedDateTime startDate, ZonedDateTime endDate) {
-        List<Schedule> schedules = getSchedulesByDateRange(userId, startDate, endDate);
-        return schedules.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
+//    public List<ScheduleDTO> getScheduleDTOsByUserId(Long userId) {
+//        List<Schedule> schedules = getSchedulesByUserId(userId);
+//        return schedules.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
+//
+//    public List<ScheduleDTO> getScheduleDTOsByDateRange(Long userId, ZonedDateTime startDate, ZonedDateTime endDate) {
+//        List<Schedule> schedules = getSchedulesByDateRange(userId, startDate, endDate);
+//        return schedules.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
 }

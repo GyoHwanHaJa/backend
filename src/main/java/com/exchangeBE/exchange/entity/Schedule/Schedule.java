@@ -42,15 +42,4 @@ public class Schedule {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "recurrence_id", referencedColumnName = "id")
     private Recurrence recurrence;
-
-    // Helper methods for bidirectional relationship management
-    public void addScheduleTag(ScheduleTag tag) {
-        scheduleTags.add(tag);
-        tag.setSchedule(this);
-    }
-
-    public void removeScheduleTag(ScheduleTag tag) {
-        scheduleTags.remove(tag);
-        tag.setSchedule(null);
-    }
 }

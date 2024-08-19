@@ -24,15 +24,4 @@ public class Tag {
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<ScheduleTag> scheduleTags = new HashSet<>();
-
-    // Helper methods for bidirectional relationship management
-    public void addScheduleTag(ScheduleTag scheduleTag) {
-        scheduleTags.add(scheduleTag);
-        scheduleTag.setTag(this);
-    }
-
-    public void removeScheduleTag(ScheduleTag scheduleTag) {
-        scheduleTags.remove(scheduleTag);
-        scheduleTag.setTag(null);
-    }
 }
