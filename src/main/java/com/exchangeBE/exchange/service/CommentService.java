@@ -31,7 +31,7 @@ public class CommentService {
     @Transactional
     public CommentResponseDTO addComment(Long boardId, CommentRequestDTO request) {
         // 사용자 조회 (nickname으로)
-        User user = userRepository.findBynickname(request.getnickname())
+        User user = userRepository.findBynickname(request.getNickname())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 게시판 조회
@@ -55,7 +55,7 @@ public class CommentService {
     @Transactional
     public CommentResponseDTO addReply(Long boardId, CommentRequestDTO request) {
         // 사용자 조회 (nickname으로)
-        User user = userRepository.findBynickname(request.getnickname())
+        User user = userRepository.findBynickname(request.getNickname())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 게시판 조회
@@ -85,7 +85,7 @@ public class CommentService {
         responseDTO.setId(comment.getId());
         responseDTO.setContent(comment.getContent());
         responseDTO.setId(comment.getUser().getId());
-        responseDTO.setnickname(comment.getUser().getnickname());
+        responseDTO.setNickname(comment.getUser().getNickname());
         responseDTO.setCreatedAt(comment.getCreatedAt());
         if (comment.getParentComment() != null) {
             responseDTO.setParentId(comment.getParentComment().getId()); // 부모 댓글 ID 설정

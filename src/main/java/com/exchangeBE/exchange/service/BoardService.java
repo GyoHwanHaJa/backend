@@ -156,7 +156,7 @@ public class BoardService {
                 .modifiedAt(board.getModifiedAt())
                 .likes(board.getLikes())
                 .views(board.getViews())
-                .nickname(board.getUser().getnickname())
+                .nickname(board.getUser().getNickname())
                 .scrap(board.getScrap())
                 .build();
     }
