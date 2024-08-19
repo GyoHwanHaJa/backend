@@ -2,8 +2,10 @@ package com.exchangeBE.exchange.controller;
 
 import com.exchangeBE.exchange.dto.BoardRequestDTO;
 import com.exchangeBE.exchange.dto.BoardResponseDTO;
+import com.exchangeBE.exchange.dto.HotBoardResponseDTO;
 import com.exchangeBE.exchange.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,5 +80,12 @@ public class BoardController {
     public BoardResponseDTO cancelLikeBoard(@PathVariable Long boardId) {
         return boardService.cancelLikeBoard(boardId);
 
+    }
+
+    // 핫 게시물 조회
+    @GetMapping("/api/posts/hot")
+    public ResponseEntity<List<HotBoardResponseDTO>> getHotBoards() {
+        List<HotBoardResponseDTO> hotBoards = boardService.getHotBoards();
+        return ResponseEntity.ok(hotBoards);
     }
 }
