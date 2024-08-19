@@ -14,6 +14,7 @@ import com.exchangeBE.exchange.repository.TravelTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,39 +35,75 @@ public class TravelTagService {
     @Autowired
     private PlaceRepository placeRepository;
 
+//    public TravelTagDto createTravelTag(TravelTagDto travelTagDto) {
+//        TravelEntity travelPost = travelRepository.findById(travelTagDto.getTravelPostId())
+//                .orElseThrow(() -> new RuntimeException("Travel post not found"));
+//
+//        // CountryEntity를 조회하여 설정
+//        CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
+//                .orElseThrow(() -> new RuntimeException("Country not found"));
+//
+//        // PlaceEntity를 조회하거나 새로 생성하여 설정
+//        PlaceEntity place = placeRepository.findByName(travelTagDto.getPlace().getName())
+//                .orElseGet(() -> {
+//                    PlaceEntity newPlace = new PlaceEntity();
+//                    newPlace.setName(travelTagDto.getPlace().getName());
+//                    return placeRepository.save(newPlace); // 새로 생성된 PlaceEntity를 저장
+//                });
+
+
+    @Transactional
     public TravelTagDto createTravelTag(TravelTagDto travelTagDto) {
+        // TravelEntity 조회
         TravelEntity travelPost = travelRepository.findById(travelTagDto.getTravelPostId())
                 .orElseThrow(() -> new RuntimeException("Travel post not found"));
 
-        // CountryEntity를 조회하여 설정
+        // CountryEntity를 CountryDto로부터 조회하거나 새로 생성
         CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
                 .orElseThrow(() -> new RuntimeException("Country not found"));
 
-        // PlaceEntity를 조회하거나 새로 생성하여 설정
+        // PlaceEntity를 PlaceDto로부터 조회하거나 새로 생성
         PlaceEntity place = placeRepository.findByName(travelTagDto.getPlace().getName())
                 .orElseGet(() -> {
                     PlaceEntity newPlace = new PlaceEntity();
                     newPlace.setName(travelTagDto.getPlace().getName());
-                    return placeRepository.save(newPlace); // 새로 생성된 PlaceEntity를 저장
+                    return placeRepository.save(newPlace);
                 });
 
+//
+//        TravelTagEntity tagEntity = new TravelTagEntity();
+//
+//        tagEntity.setTravelPost(travelPost);
+//        tagEntity.setCountry(country);  // 조회된 CountryEntity 설정
+//
+//
+//
+//        tagEntity.setPlaceName(travelTagDto.getPlace().getName());  // PlaceDto에서 이름을 추출해 설정
+//        tagEntity.setSubject(travelTagDto.getSubject());
+//        tagEntity.setTravelDateStart(travelTagDto.getTravelDateStart());
+//        tagEntity.setTravelDateEnd(travelTagDto.getTravelDateEnd());
+//
+//        travelTagRepository.save(tagEntity);
+//
+//        return convertToDto(tagEntity);
+//    }
 
+        // TravelTagEntity 생성 및 설정
         TravelTagEntity tagEntity = new TravelTagEntity();
-
-        tagEntity.setTravelPost(travelPost);
-        tagEntity.setCountry(country);  // 조회된 CountryEntity 설정
-
-
-
-        tagEntity.setPlaceName(travelTagDto.getPlace().getName());  // PlaceDto에서 이름을 추출해 설정
+        tagEntity.setTravel(travelPost);
+        tagEntity.setCountry(country);  // Country 설정
+        tagEntity.setPlaceName(place.getName());  // Place 설정
         tagEntity.setSubject(travelTagDto.getSubject());
         tagEntity.setTravelDateStart(travelTagDto.getTravelDateStart());
         tagEntity.setTravelDateEnd(travelTagDto.getTravelDateEnd());
 
-        travelTagRepository.save(tagEntity);
+        // TravelTagEntity 저장
+        TravelTagEntity savedTagEntity = travelTagRepository.save(tagEntity);
 
-        return convertToDto(tagEntity);
+        return convertToDto(savedTagEntity);
     }
+
+
 
     public List<TravelTagDto> getTagsForTravelPost(Long travelPostId) {
         return travelTagRepository.findByTravelPostId(travelPostId).stream()
@@ -97,5 +134,36 @@ public class TravelTagService {
 
 
         return dto;
+    }
+    @Transactional
+    public TravelTagDto updateTravelTag(Long travelId, Long tagId, TravelTagDto travelTagDto) {
+        TravelTagEntity travelTag = travelTagRepository.findById(tagId)
+                .orElseThrow(() -> new RuntimeException("Tag not found"));
+
+        travelTag.setTagType(travelTagDto.getSubject());  // 주제 설정
+        travelTag.setTravelDateStart(travelTagDto.getTravelDateStart());
+        travelTag.setTravelDateEnd(travelTagDto.getTravelDateEnd());
+
+        // CountryEntity를 CountryDto로부터 업데이트
+        CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
+                .orElseThrow(() -> new RuntimeException("Country not found"));
+        travelTag.setCountry(country);
+
+        // PlaceEntity를 PlaceDto로부터 업데이트
+        PlaceEntity place = placeRepository.findByName(travelTagDto.getPlace().getName())
+                .orElseGet(() -> {
+                    PlaceEntity newPlace = new PlaceEntity();
+                    newPlace.setName(travelTagDto.getPlace().getName());
+                    return placeRepository.save(newPlace);
+                });
+        travelTag.setPlaceName(place.getName());
+
+        TravelTagEntity updatedTag = travelTagRepository.save(travelTag);
+        return convertToDto(updatedTag);
+    }
+
+    @Transactional
+    public void deleteTravelTag(Long tagId) {
+        travelTagRepository.deleteById(tagId);
     }
 }

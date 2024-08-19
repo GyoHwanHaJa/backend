@@ -8,19 +8,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/travel/tags")
+@RequestMapping("/api/travel/{travelId}/tags")
 public class TravelTagController {
 
     @Autowired
     private TravelTagService travelTagService;
 
-    @PostMapping
-    public TravelTagDto createTravelTag(@RequestBody TravelTagDto travelTagDto) {
-        return travelTagService.createTravelTag(travelTagDto);
+    @GetMapping
+    public List<TravelTagDto> getTagsByTravelId(@PathVariable("travelId") Long travelId) {
+        return travelTagService.getTagsByTravelId(travelId);
     }
 
-    @GetMapping("/{travelPostId}")
-    public List<TravelTagDto> getTagsForTravelPost(@PathVariable Long travelPostId) {
-        return travelTagService.getTagsForTravelPost(travelPostId);
+    @PostMapping
+    public TravelTagDto createTravelTag(@PathVariable("travelId") Long travelId, @RequestBody TravelTagDto travelTagDto) {
+        return travelTagService.createTravelTag(travelId, travelTagDto);
+    }
+
+    @PutMapping("/{tagId}")
+    public TravelTagDto updateTravelTag(@PathVariable("travelId") Long travelId, @PathVariable("tagId") Long tagId, @RequestBody TravelTagDto travelTagDto) {
+        return travelTagService.updateTravelTag(travelId, tagId, travelTagDto);
+    }
+
+    @DeleteMapping("/{tagId}")
+    public void deleteTravelTag(@PathVariable("tagId") Long tagId) {
+        travelTagService.deleteTravelTag(tagId);
     }
 }
