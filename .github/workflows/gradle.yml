@@ -1,6 +1,5 @@
 # Workflow 이름
 name: gyohwanhaja
-
 # 어떤 이벤트가 발생하면 workflow 실행할 지 명시
 on:
   # main 브랜치에 push나 pull request 발생 시
@@ -8,7 +7,6 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
 # 위 이벤트 발생 시 실행될 작업들
 jobs:
   build-and-deploy:
@@ -34,6 +32,10 @@ jobs:
       
       - name: Run JAR file
         run: java -jar build/libs/*.jar &
+      
+      # application.yml 작성
+      - name: Create application.yml
+        run: echo "${{ secrets.APPLICATION }}" > application.yml
       
       - name: Build Docker image
         run: |
