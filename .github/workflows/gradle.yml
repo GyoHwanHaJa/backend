@@ -1,19 +1,15 @@
-# Workflow 이름
 name: gyohwanhaja
-# 어떤 이벤트가 발생하면 workflow 실행할 지 명시
+
 on:
-  # main 브랜치에 push나 pull request 발생 시
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-# 위 이벤트 발생 시 실행될 작업들
+
 jobs:
   build-and-deploy:
-    # VM의 실행 환경 지정 => 우분투 최신 버전
     runs-on: ubuntu-latest
     
-    # 실행될 jobs를 순서대로 명시
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,12 +26,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build --exclude-task test
       
-      - name: Run JAR file
-        run: java -jar build/libs/*.jar &
-      
       # application.yml 작성
       - name: Create application.yml
-        run: echo "${{ secrets.APPLICATION }}" > application.yml
+        run: |
+          echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
+          cat src/main/resources/application.yml
       
       - name: Build Docker image
         run: |
@@ -64,23 +59,18 @@ jobs:
             set -e
             echo "Deployment started..."
             
-            echo "Checking current running containers:"
-            sudo docker ps
-            
-            # 기존 컨테이너 확인 및 중지
-            if sudo docker ps -a --format '{{.Names}}' | grep -q '^gyohwanhaja_app_1$'; then
-              echo "Stopping and removing existing container..."
-              sudo docker stop gyohwanhaja_app_1 || true
-              sudo docker rm gyohwanhaja_app_1 || true
-            else
-              echo "No existing container found."
-            fi
-            
             echo "Pulling new Docker image..."
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/gyohwanhaja:latest
             
+            echo "Stopping and removing existing container..."
+            sudo docker stop gyohwanhaja_app_1 || true
+            sudo docker rm gyohwanhaja_app_1 || true
+            
             echo "Starting new container..."
             sudo docker run -d --name gyohwanhaja_app_1 -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/gyohwanhaja:latest
+            
+            echo "Checking container logs..."
+            sudo docker logs gyohwanhaja_app_1
             
             echo "Verifying new container is running..."
             if sudo docker ps | grep -q gyohwanhaja_app_1; then
