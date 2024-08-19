@@ -1,13 +1,11 @@
 package com.exchangeBE.exchange.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,4 +28,11 @@ public class User {
     private MembershipLevel membershipLevel;
     private Integer totalView;
     private Integer totalScrap;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Board> boards;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 }
+
