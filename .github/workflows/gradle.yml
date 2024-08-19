@@ -61,16 +61,12 @@ jobs:
             echo "현재 실행 중인 컨테이너:"
             sudo docker ps
             
-            # 기존 컨테이너 중지 및 삭제
-            sudo docker stop gyohwanhaja || true
-            sudo docker rm gyohwanhaja || true
+            # 기존 컨테이너 확인 및 중지 
+            if [ $(sudo docker ps -q -f name=gyohwanhaja_app_1) ]; then
+              sudo docker stop gyohwanhaja_app_1
+              sudo docker rm gyohwanhaja_app_1
+            fi
 
-            #중지 및 삭제 확인
-            echo "컨테이너 중지 및 삭제 후:"
-            sudo docker ps -a
-            
-            # Docker Hub에서 최신 이미지 pull
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/gyohwanhaja:latest
-            
             # 새 컨테이너 실행
-            sudo docker run -d --name gyohwanhaja -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/gyohwanhaja:latest
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/gyohwanhaja:latest
+            sudo docker run -d --name gyohwanhaja_app_1 -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/gyohwanhaja:latest 
