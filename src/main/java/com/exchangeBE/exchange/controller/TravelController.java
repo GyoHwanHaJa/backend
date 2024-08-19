@@ -24,7 +24,7 @@ public class TravelController {
         return travelService.getTravelPostById(id);
     }
 
-    @PostMapping("/{id}/post") //test해보려고 주소 좀 넣음
+    @PostMapping
     public TravelDto createTravelPost(@RequestBody TravelDto travelDto) {
         return travelService.createTravelPost(travelDto);
     }

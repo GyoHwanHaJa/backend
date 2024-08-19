@@ -49,7 +49,7 @@ public class GooglePlacesService {
                     "?input=" + URLEncoder.encode(query, "UTF-8") +
                     "&inputtype=textquery" +
                     "&fields=name,formatted_address" +
-                    "&key=" + "AIzaSyBMQMDP0Mg84AcxhNW0nczyk60OW16nSKs";
+                    "&key=" + apiKey;
 
             // HttpURLConnection을 사용하여 요청 보내기
             URL requestUrl = new URL(url);
