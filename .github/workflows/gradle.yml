@@ -29,6 +29,7 @@ jobs:
       # application.yml 작성
       - name: Create application.yml
         run: |
+          mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
           cat src/main/resources/application.yml
       
