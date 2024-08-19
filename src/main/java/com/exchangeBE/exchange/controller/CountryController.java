@@ -2,6 +2,7 @@ package com.exchangeBE.exchange.controller;
 
 import com.exchangeBE.exchange.entity.Trip.Country;
 import com.exchangeBE.exchange.service.trip.CountryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +14,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/countries")
+@RequiredArgsConstructor
 public class CountryController {
-    @Autowired
+
     private CountryService countryService;
 
     @GetMapping
