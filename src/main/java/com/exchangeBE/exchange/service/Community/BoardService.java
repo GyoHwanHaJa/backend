@@ -1,14 +1,15 @@
-package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service.Community;
 
 
 import com.exchangeBE.exchange.dto.BoardRequestDTO;
 import com.exchangeBE.exchange.dto.BoardResponseDTO;
+import com.exchangeBE.exchange.dto.BoardSearchRequestDTO;
 import com.exchangeBE.exchange.dto.HotBoardResponseDTO;
-import com.exchangeBE.exchange.entity.Board;
-import com.exchangeBE.exchange.entity.User;
-import com.exchangeBE.exchange.repository.BoardRepository;
-import com.exchangeBE.exchange.repository.CommentRepository;
-import com.exchangeBE.exchange.repository.UserRepository;
+import com.exchangeBE.exchange.entity.Community.Board;
+import com.exchangeBE.exchange.entity.User.User;
+import com.exchangeBE.exchange.repository.Community.BoardRepository;
+import com.exchangeBE.exchange.repository.Community.CommentRepository;
+import com.exchangeBE.exchange.repository.Community.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,18 @@ public class BoardService {
 
     public List<BoardResponseDTO> getAllBoards() {
         List<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc();
+        return boards.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    //제목으로 게시물 검색기능
+    public List<BoardResponseDTO> searchByTitle(BoardSearchRequestDTO boardSearchRequestDTO) {
+        List<Board> boards = boardRepository.findByTitleContainingOrderByCreatedAtDesc(boardSearchRequestDTO.getTitle());
+        return convertToDTOs(boards);
+    }
+
+    private List<BoardResponseDTO> convertToDTOs(List<Board> boards) {
         return boards.stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());

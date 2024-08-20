@@ -1,13 +1,13 @@
-package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service.Community;
 
 import com.exchangeBE.exchange.dto.CommentRequestDTO;
 import com.exchangeBE.exchange.dto.CommentResponseDTO;
-import com.exchangeBE.exchange.entity.Board;
-import com.exchangeBE.exchange.entity.Comment;
-import com.exchangeBE.exchange.entity.User;
-import com.exchangeBE.exchange.repository.BoardRepository;
-import com.exchangeBE.exchange.repository.CommentRepository;
-import com.exchangeBE.exchange.repository.UserRepository;
+import com.exchangeBE.exchange.entity.Community.Board;
+import com.exchangeBE.exchange.entity.Community.Comment;
+import com.exchangeBE.exchange.entity.User.User;
+import com.exchangeBE.exchange.repository.Community.BoardRepository;
+import com.exchangeBE.exchange.repository.Community.CommentRepository;
+import com.exchangeBE.exchange.repository.Community.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

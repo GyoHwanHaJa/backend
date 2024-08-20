@@ -1,5 +1,7 @@
-package com.exchangeBE.exchange.entity;
+package com.exchangeBE.exchange.entity.User;
 
+import com.exchangeBE.exchange.entity.Community.Board;
+import com.exchangeBE.exchange.entity.Community.Comment;
 import jakarta.persistence.*;
 import lombok.*;
 

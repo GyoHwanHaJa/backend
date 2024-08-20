@@ -1,7 +1,5 @@
 package com.exchangeBE.exchange.dto;
 
-
-import com.exchangeBE.exchange.entity.Community.BoardType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,8 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BoardRequestDTO {
+public class BoardSearchRequestDTO {
     private String title;
-    private String content;
-    private BoardType boardType;
 }

@@ -4,21 +4,17 @@ import com.exchangeBE.exchange.dto.RecurrenceCreateDTO;
 import com.exchangeBE.exchange.dto.ScheduleCreateDTO;
 import com.exchangeBE.exchange.dto.ScheduleDTO;
 import com.exchangeBE.exchange.entity.Schedule.*;
-import com.exchangeBE.exchange.entity.User;
-import com.exchangeBE.exchange.repository.UserRepository;
+import com.exchangeBE.exchange.entity.User.User;
+import com.exchangeBE.exchange.repository.Community.UserRepository;
 import com.exchangeBE.exchange.repository.schedule.*;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
