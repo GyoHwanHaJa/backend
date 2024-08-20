@@ -34,7 +34,7 @@ public class ScheduleService {
     private final ScheduleTagRepository scheduleTagRepository;
 
     @Transactional
-    public Schedule createOrUpdateSchedule(ScheduleCreateDTO scheduleCreateDto) {
+    public Long createOrUpdateSchedule(ScheduleCreateDTO scheduleCreateDto) {
         Schedule schedule;
 
         // 제공된 유저 ID로 유저 찾음
@@ -85,7 +85,7 @@ public class ScheduleService {
         // 최종 저장
         schedule = scheduleRepository.save(schedule);
 
-        return schedule;
+        return schedule.getId();
     }
 
     private void updateScheduleInfo(Schedule schedule, ScheduleCreateDTO scheduleCreateDto) {

@@ -12,12 +12,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/schedules")
@@ -34,9 +37,20 @@ public class ScheduleController {
                             content = @Content(schema = @Schema(implementation = Schedule.class))),
                     @ApiResponse(responseCode = "400", description = "잘못된 입력")
             })
-    public Schedule createSchedule(@RequestBody ScheduleCreateDTO dto) {
-        scheduleService.createOrUpdateSchedule(dto);
-        return null;
+    public ResponseEntity createSchedule(@RequestBody ScheduleCreateDTO dto) {
+        try {
+            Long scheduleId = scheduleService.createOrUpdateSchedule(dto);
+
+            Map<String, Long> response = new HashMap<>();
+            response.put("scheduleId", scheduleId);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "일정 생성에 실패했습니다.");
+            errorResponse.put("message", e.getMessage());
+
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{scheduleId}")
@@ -47,12 +61,23 @@ public class ScheduleController {
                             content = @Content(schema = @Schema(implementation = Schedule.class))),
                     @ApiResponse(responseCode = "404", description = "일정을 찾을 수 없음")
             })
-    public Schedule updateSchedule(
+    public ResponseEntity updateSchedule(
             @RequestBody ScheduleCreateDTO dto,
             @Parameter(description = "수정할 일정의 ID") @PathVariable Long scheduleId) {
-        dto.setScheduleId(scheduleId);
-        scheduleService.createOrUpdateSchedule(dto);
-        return null;
+        try {
+            dto.setScheduleId(scheduleId);
+            scheduleId = scheduleService.createOrUpdateSchedule(dto);
+
+            Map<String, Long> response = new HashMap<>();
+            response.put("scheduleId", scheduleId);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "일정 수정에 실패했습니다.");
+            errorResponse.put("message", e.getMessage());
+
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{scheduleId}")
