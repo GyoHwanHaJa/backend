@@ -1,10 +1,9 @@
 package com.exchangeBE.exchange.dto;
 
-import com.exchangeBE.exchange.entity.BoardType;
+import com.exchangeBE.exchange.entity.Community.BoardType;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter

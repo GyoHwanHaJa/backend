@@ -1,6 +1,6 @@
-package com.exchangeBE.exchange.repository;
+package com.exchangeBE.exchange.repository.Community;
 
-import com.exchangeBE.exchange.entity.User;
+import com.exchangeBE.exchange.entity.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

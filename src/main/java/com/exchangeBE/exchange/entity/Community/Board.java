@@ -1,5 +1,6 @@
-package com.exchangeBE.exchange.entity;
+package com.exchangeBE.exchange.entity.Community;
 
+import com.exchangeBE.exchange.entity.User.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

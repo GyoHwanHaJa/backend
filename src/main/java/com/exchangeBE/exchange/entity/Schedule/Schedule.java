@@ -1,6 +1,6 @@
 package com.exchangeBE.exchange.entity.Schedule;
 
-import com.exchangeBE.exchange.entity.User;
+import com.exchangeBE.exchange.entity.User.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

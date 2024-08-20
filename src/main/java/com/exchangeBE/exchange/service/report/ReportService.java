@@ -1,8 +1,8 @@
 package com.exchangeBE.exchange.service.report;
 
 import com.exchangeBE.exchange.entity.Report.*;
-import com.exchangeBE.exchange.entity.User;
-import com.exchangeBE.exchange.repository.UserRepository;
+import com.exchangeBE.exchange.entity.User.User;
+import com.exchangeBE.exchange.repository.Community.UserRepository;
 import com.exchangeBE.exchange.repository.report.OptionRepository;
 import com.exchangeBE.exchange.repository.report.ReportRepository;
 import com.exchangeBE.exchange.repository.report.UserAnswerOptionRepository;

@@ -1,6 +1,6 @@
 package com.exchangeBE.exchange.entity.Report;
 
-import com.exchangeBE.exchange.entity.User;
+import com.exchangeBE.exchange.entity.User.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

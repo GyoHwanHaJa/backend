@@ -2,7 +2,7 @@ package com.exchangeBE.exchange.controller;
 
 import com.exchangeBE.exchange.dto.CommentRequestDTO;
 import com.exchangeBE.exchange.dto.CommentResponseDTO;
-import com.exchangeBE.exchange.service.CommentService;
+import com.exchangeBE.exchange.service.Community.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
