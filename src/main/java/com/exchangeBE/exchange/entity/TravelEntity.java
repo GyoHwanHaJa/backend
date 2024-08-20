@@ -43,7 +43,7 @@ public class TravelEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "travelPost", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TravelTagEntity> tags = new ArrayList<>(); // 필드 초기화
 
     @PrePersist
