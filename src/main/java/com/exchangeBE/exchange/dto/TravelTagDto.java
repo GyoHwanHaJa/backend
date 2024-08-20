@@ -5,6 +5,7 @@ import com.exchangeBE.exchange.dto.PlaceDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import com.exchangeBE.exchange.entity.Subject;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +18,8 @@ public class TravelTagDto {
 
     private CountryDto country; // CountryDto를 추가
     //private String placeName;  // PlaceName을 문자열로 추가
-    private String subject;
+    // 주제 필드를 Enum으로 변경
+    private Subject subject;
     private LocalDateTime travelDateStart;
     private LocalDateTime travelDateEnd;
 

@@ -53,7 +53,15 @@ public class TravelTagService {
 
 
     @Transactional
-    public TravelTagDto createTravelTag(TravelTagDto travelTagDto) {
+    public List<TravelTagDto> getTagsByTravelId(Long travelId) {
+        return travelTagRepository.findByTravel_Id(travelId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Transactional // travelId 에 관한 메서드 필요
+    public TravelTagDto createTravelTag(Long travelId, TravelTagDto travelTagDto) {
         // TravelEntity 조회
         TravelEntity travelPost = travelRepository.findById(travelTagDto.getTravelPostId())
                 .orElseThrow(() -> new RuntimeException("Travel post not found"));
@@ -93,6 +101,7 @@ public class TravelTagService {
         tagEntity.setTravel(travelPost);
         tagEntity.setCountry(country);  // Country 설정
         tagEntity.setPlaceName(place.getName());  // Place 설정
+        // 주제를 Enum으로 설정
         tagEntity.setSubject(travelTagDto.getSubject());
         tagEntity.setTravelDateStart(travelTagDto.getTravelDateStart());
         tagEntity.setTravelDateEnd(travelTagDto.getTravelDateEnd());
@@ -106,7 +115,7 @@ public class TravelTagService {
 
 
     public List<TravelTagDto> getTagsForTravelPost(Long travelPostId) {
-        return travelTagRepository.findByTravelPostId(travelPostId).stream()
+        return travelTagRepository.findByTravel_Id(travelPostId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -114,8 +123,10 @@ public class TravelTagService {
     private TravelTagDto convertToDto(TravelTagEntity tagEntity) {
         TravelTagDto dto = new TravelTagDto();
         dto.setId(tagEntity.getId());
-        dto.setTravelPostId(tagEntity.getTravelPost().getId());
+        dto.setTravelPostId(tagEntity.getTravel().getId());
+        // 주제를 Enum으로 변환하여 설정
         dto.setSubject(tagEntity.getSubject());
+
         dto.setTravelDateStart(tagEntity.getTravelDateStart());
         dto.setTravelDateEnd(tagEntity.getTravelDateEnd());
 
@@ -135,12 +146,16 @@ public class TravelTagService {
 
         return dto;
     }
+
+
     @Transactional
     public TravelTagDto updateTravelTag(Long travelId, Long tagId, TravelTagDto travelTagDto) {
         TravelTagEntity travelTag = travelTagRepository.findById(tagId)
                 .orElseThrow(() -> new RuntimeException("Tag not found"));
 
-        travelTag.setTagType(travelTagDto.getSubject());  // 주제 설정
+        // 주제를 Enum으로 업데이트
+        travelTag.setSubject(travelTagDto.getSubject());
+
         travelTag.setTravelDateStart(travelTagDto.getTravelDateStart());
         travelTag.setTravelDateEnd(travelTagDto.getTravelDateEnd());
 

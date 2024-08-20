@@ -3,6 +3,9 @@ package com.exchangeBE.exchange.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
+
 @Entity
 @Table(name = "travel_tag")
 @Getter
@@ -21,19 +24,20 @@ public class TravelTagEntity {
     @JoinColumn(name = "travel_id", nullable = false)
     private TravelEntity travel;
 
-    // 주제 태그 설정
-    @Column(nullable = true)  // 주제는 필수일 필요가 없을 수도 있음
-    private String subject; // 예: "cost-effectiveness", "local", "must-eat restaurant", "history"
+    // 주제 태그를 Enum으로 설정
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Subject subject; // 주제 태그 (예: "cost-effectiveness", "local", "must-eat restaurant", "history", "long-term-trip")
 
     // 여행 시작 날짜와 종료 날짜 태그
     @Column(name = "travel_date_start", nullable = true)
-    private String travelDateStart;
+    private LocalDateTime travelDateStart; // LocalDateTime 타입
 
     @Column(name = "travel_date_end", nullable = true)
-    private String travelDateEnd;
+    private LocalDateTime travelDateEnd; // LocalDateTime 타입
 
 // Country 엔티티와 다대일 관계 설정
-    @Getter
+//    @Getter
     @ManyToOne
     @JoinColumn(name = "country_id")  // 외래 키 이름 설정
     private CountryEntity country;
