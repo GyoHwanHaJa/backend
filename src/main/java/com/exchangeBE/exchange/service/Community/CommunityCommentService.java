@@ -6,7 +6,7 @@ import com.exchangeBE.exchange.entity.Community.Board;
 import com.exchangeBE.exchange.entity.Community.Comment;
 import com.exchangeBE.exchange.entity.User.User;
 import com.exchangeBE.exchange.repository.Community.BoardRepository;
-import com.exchangeBE.exchange.repository.Community.CommentRepository;
+import com.exchangeBE.exchange.repository.Community.CommunityCommentRepository;
 import com.exchangeBE.exchange.repository.Community.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class CommentService {
+public class CommunityCommentService {
     @Autowired
-    private CommentRepository commentRepository;
+    private CommunityCommentRepository communityCommentRepository;
 
     @Autowired
     private BoardRepository boardRepository;
@@ -46,7 +46,7 @@ public class CommentService {
         comment.setParentComment(null); // 일반 댓글은 부모 댓글이 없음
 
         // 댓글 저장
-        commentRepository.save(comment);
+        communityCommentRepository.save(comment);
 
         // 댓글 응답 DTO 생성
         return convertToResponseDTO(comment);
@@ -63,7 +63,7 @@ public class CommentService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
 
         // 부모 댓글 조회
-        Comment parentComment = commentRepository.findById(request.getParentId())
+        Comment parentComment = communityCommentRepository.findById(request.getParentId())
                 .orElseThrow(() -> new RuntimeException("Parent comment not found"));
 
         // 대댓글 생성
@@ -74,7 +74,7 @@ public class CommentService {
         reply.setParentComment(parentComment);
 
         // 대댓글 저장
-        commentRepository.save(reply);
+        communityCommentRepository.save(reply);
 
         // 대댓글 응답 DTO 생성
         return convertToResponseDTO(reply);
@@ -100,7 +100,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponseDTO> getComments(Long boardId) {
-        List<Comment> comments = commentRepository.findByBoardId(boardId);
+        List<Comment> comments = communityCommentRepository.findByBoardId(boardId);
         Map<Long, CommentResponseDTO> responseMap = new HashMap<>();
         List<CommentResponseDTO> responseList = new ArrayList<>();
 

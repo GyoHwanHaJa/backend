@@ -2,7 +2,7 @@ package com.exchangeBE.exchange.controller;
 
 import com.exchangeBE.exchange.dto.CommentRequestDTO;
 import com.exchangeBE.exchange.dto.CommentResponseDTO;
-import com.exchangeBE.exchange.service.Community.CommentService;
+import com.exchangeBE.exchange.service.Community.CommunityCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,20 +12,20 @@ import java.util.List;
 @RequestMapping("/api/post/comments")
 public class CommentController {
     @Autowired
-    private CommentService commentService;
+    private CommunityCommentService communityCommentService;
 
     @PostMapping("/{boardId}")
     public CommentResponseDTO addComment(@PathVariable Long boardId, @RequestBody CommentRequestDTO request) {
-        return commentService.addComment(boardId, request);
+        return communityCommentService.addComment(boardId, request);
     }
 
     @PostMapping("/{boardId}/reply")
     public CommentResponseDTO addReply(@PathVariable Long boardId, @RequestBody CommentRequestDTO request) {
-        return commentService.addReply(boardId, request);
+        return communityCommentService.addReply(boardId, request);
     }
 
     @GetMapping("/board/{boardId}")
     public List<CommentResponseDTO> getComments(@PathVariable Long boardId) {
-        return commentService.getComments(boardId);
+        return communityCommentService.getComments(boardId);
     }
 }

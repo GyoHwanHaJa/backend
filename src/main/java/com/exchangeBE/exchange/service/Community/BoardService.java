@@ -8,7 +8,7 @@ import com.exchangeBE.exchange.dto.HotBoardResponseDTO;
 import com.exchangeBE.exchange.entity.Community.Board;
 import com.exchangeBE.exchange.entity.User.User;
 import com.exchangeBE.exchange.repository.Community.BoardRepository;
-import com.exchangeBE.exchange.repository.Community.CommentRepository;
+import com.exchangeBE.exchange.repository.Community.CommunityCommentRepository;
 import com.exchangeBE.exchange.repository.Community.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class BoardService {
     private UserRepository userRepository;
 
     @Autowired
-    private CommentRepository commentRepository;
+    private CommunityCommentRepository communityCommentRepository;
 
     public List<BoardResponseDTO> getAllBoards() {
         List<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc();
