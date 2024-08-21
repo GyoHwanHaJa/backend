@@ -102,19 +102,4 @@ public class ScheduleController {
         ScheduleDTO scheduleDTO = scheduleService.getScheduleDTOById(scheduleId);
         return ResponseEntity.ok(scheduleDTO);
     }
-
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<List<ScheduleDTO>> getSchedulesByUserId(@PathVariable Long userId) {
-//        List<ScheduleDTO> scheduleDTOs = scheduleService.getScheduleDTOsByUserId(userId);
-//        return ResponseEntity.ok(scheduleDTOs);
-//    }
-//
-//    @GetMapping("/user/{userId}/range")
-//    public ResponseEntity<List<ScheduleDTO>> getSchedulesByDateRange(
-//            @PathVariable Long userId,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime startDate,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime endDate) {
-//        List<ScheduleDTO> scheduleDTOs = scheduleService.getScheduleDTOsByDateRange(userId, startDate, endDate);
-//        return ResponseEntity.ok(scheduleDTOs);
-//    }
 }

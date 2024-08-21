@@ -30,9 +30,9 @@ public class ReportController {
 
     @PostMapping("/{userId}")
     @Operation(summary = "보고서 생성", description = "새로운 보고서를 생성합니다.")
-    @ApiResponse(responseCode = "201", description = "보고서 생성 성공")
-    @ApiResponse(responseCode = "400", description = "보고서 생성 실패 - 교환머니 잔액 부족")
-    @ApiResponse(responseCode = "404", description = "보고서 생성 실패 - 사용자를 찾을 수 없음")
+    @ApiResponse(responseCode = "201", description = "보고서 생성 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "400", description = "보고서 생성 실패 - 교환머니 잔액 부족", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "보고서 생성 실패 - 사용자를 찾을 수 없음", content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity createReport(@PathVariable Long userId) {
         Long reportId = reportService.createReport(userId);
 
@@ -44,8 +44,8 @@ public class ReportController {
 
     @PatchMapping("/type")
     @Operation(summary = "보고서 유형 설정", description = "보고서의 유형을 설정합니다.")
-    @ApiResponse(responseCode = "201", description = "보고서 유형 설정 성공")
-    @ApiResponse(responseCode = "404", description = "보고서 유형 설정 실패")
+    @ApiResponse(responseCode = "201", description = "보고서 유형 설정 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "보고서 유형 설정 실패", content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity setReportType(@RequestBody ReportTypeDto reportTypeDto) {
         Report report = reportService.setReportType(reportTypeDto);
 
@@ -58,8 +58,8 @@ public class ReportController {
 
     @GetMapping("/stage")
     @Operation(summary = "단계 정보 조회", description = "보고서의 특정 단계 정보를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "특정 단계 정보 조회 성공")
-    @ApiResponse(responseCode = "404", description = "특정 단계 정보 조회 실패")
+    @ApiResponse(responseCode = "200", description = "특정 단계 정보 조회 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "특정 단계 정보 조회 실패", content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity getStage(@RequestBody StageDto stageDto) {
         StageResponseDto stageResponseDto = reportService.getStage(stageDto);
 
@@ -68,8 +68,8 @@ public class ReportController {
 
     @PutMapping("/stage")
     @Operation(summary = "단계 정보 설정", description = "보고서의 특정 단계 정보를 설정합니다.")
-    @ApiResponse(responseCode = "200", description = "특정 단계 정보 설정 성공")
-    @ApiResponse(responseCode = "404", description = "특정 단계 정보 설정 실패")
+    @ApiResponse(responseCode = "200", description = "특정 단계 정보 설정 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "특정 단계 정보 설정 실패", content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity setStage(@RequestBody StageRequestDto stageRequestDto) throws IOException {
         ReportStage reportStage = reportService.setStage(stageRequestDto);
 
@@ -83,8 +83,8 @@ public class ReportController {
 
     @GetMapping("/report/{reportId}")
     @Operation(summary = "모든 단계 정보 조회", description = "특정 보고서의 모든 단계 정보를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "모든 단계 정보 조회 성공")
-    @ApiResponse(responseCode = "404", description = "모든 단계 정보 조회 실패")
+    @ApiResponse(responseCode = "200", description = "모든 단계 정보 조회 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "모든 단계 정보 조회 실패", content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity getAllStages(@PathVariable Long reportId) {
         List<StageResponseDto> stageResponseDtoList = reportService.getAllStages(reportId);
         return ResponseEntity.status(HttpStatus.OK).body(stageResponseDtoList);
@@ -92,8 +92,8 @@ public class ReportController {
 
     @PutMapping
     @Operation(summary = "모든 단계 정보 설정", description = "특정 보고서의 모든 단계 정보를 설정합니다.")
-    @ApiResponse(responseCode = "200", description = "모든 단계 정보 설정 성공")
-    @ApiResponse(responseCode = "404", description = "모든 단계 정보 설정 실패")
+    @ApiResponse(responseCode = "200", description = "모든 단계 정보 설정 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "모든 단계 정보 설정 실패", content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity setAllStages(@RequestBody List<StageRequestDto> stageRequestDtoList) throws IOException {
         List<ReportStage> reportStageList = reportService.setAllStages(stageRequestDtoList);
 
