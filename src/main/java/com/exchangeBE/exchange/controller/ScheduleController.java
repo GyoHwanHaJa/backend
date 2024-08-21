@@ -1,5 +1,7 @@
 package com.exchangeBE.exchange.controller;
 
+import com.exchangeBE.exchange.dto.schedule.RecordRequestDto;
+import com.exchangeBE.exchange.dto.schedule.RecordResponseDto;
 import com.exchangeBE.exchange.dto.schedule.ScheduleCreateDTO;
 import com.exchangeBE.exchange.dto.schedule.ScheduleDTO;
 import com.exchangeBE.exchange.entity.Schedule.Schedule;
@@ -25,6 +27,13 @@ import java.util.Map;
 @Tag(name = "일정", description = "여행 기록 일정 관리 API")
 public class ScheduleController {
     private final ScheduleService scheduleService;
+
+    @PostMapping("/record")
+    public ResponseEntity getRecord(@RequestBody RecordRequestDto recordRequestDto) {
+        RecordResponseDto recordResponseDto = scheduleService.getRecord(recordRequestDto);
+
+        return new ResponseEntity(recordResponseDto, HttpStatus.OK);
+    }
 
     @PostMapping
     @Operation(summary = "새 일정 생성",

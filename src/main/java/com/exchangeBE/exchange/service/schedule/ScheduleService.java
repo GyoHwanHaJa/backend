@@ -1,20 +1,22 @@
 package com.exchangeBE.exchange.service.schedule;
 
-import com.exchangeBE.exchange.dto.schedule.RecurrenceCreateDTO;
-import com.exchangeBE.exchange.dto.schedule.ScheduleCreateDTO;
-import com.exchangeBE.exchange.dto.schedule.ScheduleDTO;
+import com.exchangeBE.exchange.dto.schedule.*;
+import com.exchangeBE.exchange.entity.Report.Report;
 import com.exchangeBE.exchange.entity.Schedule.*;
 import com.exchangeBE.exchange.entity.User.User;
 import com.exchangeBE.exchange.repository.Community.UserRepository;
+import com.exchangeBE.exchange.repository.report.ReportRepository;
 import com.exchangeBE.exchange.repository.schedule.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ public class ScheduleService {
     private final RecurrenceRepository recurrenceRepository;
     private final OccasionRepository occasionRepository;
     private final ScheduleTagRepository scheduleTagRepository;
+    private final ReportRepository reportRepository;
 
     @Transactional
     public Long createOrUpdateSchedule(ScheduleCreateDTO scheduleCreateDto) {
@@ -251,6 +254,55 @@ public class ScheduleService {
     public ScheduleDTO getScheduleDTOById(Long scheduleId) {
         Schedule schedule = getScheduleById(scheduleId);
         return toScheduleDto(schedule);
+    }
+
+    public RecordResponseDto getRecord(RecordRequestDto recordRequestDto) {
+        User user = userRepository.findById(recordRequestDto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + recordRequestDto.getUserId()));
+
+        LocalDate date = recordRequestDto.getRequestDate();
+
+        Long leftDays = ChronoUnit.DAYS.between(date, user.getExchangePeriodEnd().toLocalDate());
+        Integer reportCount = reportRepository.findByUser(user).size();
+
+        ZonedDateTime startOfMonth = date.withDayOfMonth(1).atStartOfDay(ZoneOffset.UTC);
+        ZonedDateTime endOfMonth = date.withDayOfMonth(date.lengthOfMonth())
+                .atTime(LocalTime.MAX)
+                .atZone(ZoneOffset.UTC);
+
+        List<Schedule> scheduleList = scheduleRepository.findByUserIdAndStartTimeBetween(recordRequestDto.getUserId(), startOfMonth, endOfMonth);
+        List<Integer> scheduleDates = new ArrayList<>();
+
+        // 일정 날짜 얻음
+        for (Schedule schedule : scheduleList) {
+            scheduleDates.add(schedule.getStartTime().getDayOfMonth());
+        }
+
+        // 요청 날짜의 일정
+        ZonedDateTime startOfDay = date.atStartOfDay(ZoneOffset.UTC);
+        ZonedDateTime endOfDay = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).minusNanos(1);
+
+        List<Schedule> dateScheduleList = scheduleRepository.findByUserIdAndStartTimeBetween(user.getId(), startOfDay, endOfDay);
+        List<ScheduleInfoDto> scheduleInfo = new ArrayList<>();
+        // 일정명과 시간 -> dto로 묶어야 하고
+        for (Schedule schedule : dateScheduleList) {
+            ScheduleInfoDto scheduleInfoDto = new ScheduleInfoDto();
+
+            scheduleInfoDto.setScheduleName(schedule.getScheduleName());
+            scheduleInfoDto.setHour(schedule.getStartTime().getHour());
+            scheduleInfoDto.setMinute(schedule.getStartTime().getMinute());
+
+            scheduleInfo.add(scheduleInfoDto);
+        }
+
+        RecordResponseDto recordResponseDto = new RecordResponseDto();
+        recordResponseDto.setLeftDays(leftDays);
+        recordResponseDto.setReportCount(reportCount);
+        recordResponseDto.setScheduleDays(scheduleDates);
+        recordResponseDto.setScheduleInfo(scheduleInfo);
+
+        return recordResponseDto;
+
     }
 
 //    public List<ScheduleDTO> getScheduleDTOsByUserId(Long userId) {
