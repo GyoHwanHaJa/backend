@@ -186,4 +186,8 @@ public class ReportService {
 
         return stageResponseDtoList;
     }
+
+    public void deleteStage(Long reportId) {
+        reportRepository.deleteById(reportId);
+    }
 }
