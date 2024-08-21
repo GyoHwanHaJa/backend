@@ -1,7 +1,7 @@
 package com.exchangeBE.exchange.controller;
 
-import com.exchangeBE.exchange.dto.ScheduleCreateDTO;
-import com.exchangeBE.exchange.dto.ScheduleDTO;
+import com.exchangeBE.exchange.dto.schedule.ScheduleCreateDTO;
+import com.exchangeBE.exchange.dto.schedule.ScheduleDTO;
 import com.exchangeBE.exchange.entity.Schedule.Schedule;
 
 import com.exchangeBE.exchange.service.schedule.ScheduleService;
@@ -11,15 +11,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
-import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController

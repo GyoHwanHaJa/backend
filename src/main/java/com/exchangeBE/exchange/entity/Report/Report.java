@@ -18,17 +18,19 @@ public class Report {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private ReportType type; // 생활, 중간, 마감
+    private ReportType reportType;
 
-    // 보고서는 여러 개의 단계로 구성된다.
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
-    private List<Stage> stages = new ArrayList<>();
+    private String title;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReportStage> reportStages = new ArrayList<>();
 }

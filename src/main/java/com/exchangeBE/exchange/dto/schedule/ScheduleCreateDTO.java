@@ -1,4 +1,4 @@
-package com.exchangeBE.exchange.dto;
+package com.exchangeBE.exchange.dto.schedule;
 
 import lombok.Data;
 import java.time.ZonedDateTime;

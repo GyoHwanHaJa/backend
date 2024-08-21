@@ -7,14 +7,18 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Image {
+public class ReportStageImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "stage_id")
-    private Stage stage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_stage_id", nullable = false)
+    private ReportStage reportStage;
 
+    @Column(nullable = false)
     private String imageUrl;
+
+    @Column(nullable = false)
+    private Integer imageOrder;
 }

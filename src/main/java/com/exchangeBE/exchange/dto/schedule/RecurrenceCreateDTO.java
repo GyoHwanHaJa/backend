@@ -1,4 +1,4 @@
-package com.exchangeBE.exchange.dto;
+package com.exchangeBE.exchange.dto.schedule;
 
 import com.exchangeBE.exchange.entity.Schedule.RecurrenceType;
 import lombok.Data;

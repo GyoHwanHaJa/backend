@@ -1,8 +1,8 @@
 package com.exchangeBE.exchange.service.schedule;
 
-import com.exchangeBE.exchange.dto.RecurrenceCreateDTO;
-import com.exchangeBE.exchange.dto.ScheduleCreateDTO;
-import com.exchangeBE.exchange.dto.ScheduleDTO;
+import com.exchangeBE.exchange.dto.schedule.RecurrenceCreateDTO;
+import com.exchangeBE.exchange.dto.schedule.ScheduleCreateDTO;
+import com.exchangeBE.exchange.dto.schedule.ScheduleDTO;
 import com.exchangeBE.exchange.entity.Schedule.*;
 import com.exchangeBE.exchange.entity.User.User;
 import com.exchangeBE.exchange.repository.Community.UserRepository;

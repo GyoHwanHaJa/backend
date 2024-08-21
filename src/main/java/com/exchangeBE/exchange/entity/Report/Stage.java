@@ -15,18 +15,15 @@ public class Stage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "report_id")
-    private Report report;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReportType reportType;
 
-    private Integer stageNumber;
+    @Column(nullable = false)
+    private Integer stageOrder;
 
     private String content;
 
-    @OneToMany(mappedBy = "stage", cascade = CascadeType.ALL)
-    private List<Options> options = new ArrayList<>();
-
-    // 사진 최대 4장
-    @OneToMany(mappedBy = "stage", cascade = CascadeType.ALL)
-    private List<Image> images = new ArrayList<>();
+    @OneToMany(mappedBy = "stage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Option> options = new ArrayList<>();
 }
