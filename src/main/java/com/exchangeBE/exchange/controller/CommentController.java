@@ -24,19 +24,15 @@ public class CommentController {
         return commentService.findCommentById(commentId);
     }
 
-    @PostMapping
-    public CommentDto createComment(@RequestBody CommentDto commentDto,
-                                    @RequestParam Long userId,
-                                    @RequestParam Long travelPostId) { // 수정된 부분
-        return commentService.saveComment(commentDto, userId, travelPostId);
+    @PostMapping("/post")
+    public CommentDto createComment(@RequestBody CommentDto commentDto) {
+        return commentService.saveComment(commentDto, commentDto.getUserId(), commentDto.getTravelPostId());
     }
 
     @PutMapping("/{commentId}")
     public CommentDto updateComment(@PathVariable Long commentId,
-                                    @RequestBody CommentDto commentDto,
-                                    @RequestParam Long userId,
-                                    @RequestParam Long travelPostId) { // 수정된 부분
-        return commentService.updateComment(commentId, commentDto, userId, travelPostId);
+                                    @RequestBody CommentDto commentDto) {
+        return commentService.updateComment(commentId, commentDto, commentDto.getUserId(), commentDto.getTravelPostId());
     }
 
     @DeleteMapping("/{commentId}")

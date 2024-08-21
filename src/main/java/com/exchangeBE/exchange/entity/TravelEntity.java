@@ -46,6 +46,9 @@ public class TravelEntity {
     @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TravelTagEntity> tags = new ArrayList<>(); // 필드 초기화
 
+    @OneToMany(mappedBy = "travelPost", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CommentEntity> comments = new ArrayList<>(); // 댓글 리스트
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -77,6 +80,13 @@ public class TravelEntity {
 
 
     // 다른 필드와 메서드...
+
+
+    public void addComment(CommentEntity comment) {
+        this.comments.add(comment);
+        comment.setTravelPost(this); // 양방향 관계 설정
+    }
+
 
     public void addTag(TravelTagEntity tag) {
         this.tags.add(tag);
