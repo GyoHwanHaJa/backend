@@ -4,11 +4,11 @@ import com.exchangeBE.exchange.dto.report.*;
 import com.exchangeBE.exchange.entity.Report.*;
 
 import com.exchangeBE.exchange.entity.User.User;
-import com.exchangeBE.exchange.exception.EntityNotFoundException;
 import com.exchangeBE.exchange.exception.InsufficientExchangeMoneyException;
 import com.exchangeBE.exchange.repository.Community.UserRepository;
 import com.exchangeBE.exchange.repository.report.*;
 import com.exchangeBE.exchange.service.image.S3Service;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

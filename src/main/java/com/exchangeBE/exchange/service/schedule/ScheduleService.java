@@ -214,7 +214,7 @@ public class ScheduleService {
 
     public Schedule getScheduleById(Long scheduleId) {
         return scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
+                .orElseThrow(() -> new EntityNotFoundException("ID가 " + scheduleId + "인 일정을 찾을 수 없습니다."));
     }
 
 //    public List<Schedule> getSchedulesByUserId(Long userId) {

@@ -31,7 +31,7 @@ public class ScheduleController {
             description = "제공된 데이터를 기반으로 새 일정을 생성합니다",
             responses = {
                     @ApiResponse(responseCode = "200", description = "일정이 성공적으로 생성됨",
-                            content = @Content(schema = @Schema(implementation = Schedule.class))),
+                            content = @Content(schema = @Schema(hidden = true))),
                     @ApiResponse(responseCode = "400", description = "잘못된 입력")
             })
     public ResponseEntity createSchedule(@RequestBody ScheduleCreateDTO dto) {
@@ -90,13 +90,9 @@ public class ScheduleController {
     }
 
     @GetMapping("/{scheduleId}")
-    @Operation(summary = "ID로 일정 조회",
-            description = "지정된 ID의 일정을 조회합니다",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "성공적인 조회",
-                            content = @Content(schema = @Schema(implementation = ScheduleDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "일정을 찾을 수 없음")
-            })
+    @Operation(summary = "ID로 일정 조회", description = "지정된 ID의 일정을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "일정 조회 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "일정 조회 실패", content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity<ScheduleDTO> getScheduleById(
             @Parameter(description = "조회할 일정의 ID") @PathVariable Long scheduleId) {
         ScheduleDTO scheduleDTO = scheduleService.getScheduleDTOById(scheduleId);

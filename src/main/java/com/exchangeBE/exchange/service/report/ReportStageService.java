@@ -3,9 +3,9 @@ package com.exchangeBE.exchange.service.report;
 import com.exchangeBE.exchange.entity.Report.Report;
 import com.exchangeBE.exchange.entity.Report.ReportStage;
 import com.exchangeBE.exchange.entity.Report.Stage;
-import com.exchangeBE.exchange.exception.EntityNotFoundException;
 import com.exchangeBE.exchange.repository.report.ReportStageRepository;
 import com.exchangeBE.exchange.repository.report.StageRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
