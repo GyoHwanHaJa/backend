@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/schedules")
 @RequiredArgsConstructor
-@Tag(name = "일정", description = "일정 관리 API")
+@RequestMapping("/api/schedules")
+@Tag(name = "일정", description = "여행 기록 일정 관리 API")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
