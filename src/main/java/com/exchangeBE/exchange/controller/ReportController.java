@@ -60,7 +60,12 @@ public class ReportController {
     @Operation(summary = "단계 정보 조회", description = "보고서의 특정 단계 정보를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "특정 단계 정보 조회 성공", content = @Content(schema = @Schema(hidden = true)))
     @ApiResponse(responseCode = "404", description = "특정 단계 정보 조회 실패", content = @Content(schema = @Schema(hidden = true)))
-    public ResponseEntity getStage(@RequestBody StageDto stageDto) {
+    public ResponseEntity getStage(@RequestParam Long reportId, @RequestParam Integer stageOrder) {
+        StageDto stageDto = new StageDto();
+
+        stageDto.setReportId(reportId);
+        stageDto.setStageOrder(stageOrder);
+
         StageResponseDto stageResponseDto = reportService.getStage(stageDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(stageResponseDto);
