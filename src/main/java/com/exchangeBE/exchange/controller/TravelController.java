@@ -1,7 +1,7 @@
 package com.exchangeBE.exchange.controller;
 
-import com.exchangeBE.exchange.dto.TravelDto;
-import com.exchangeBE.exchange.service.TravelService;
+import com.exchangeBE.exchange.dto.Trip.TravelDto;
+import com.exchangeBE.exchange.service.Trip.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

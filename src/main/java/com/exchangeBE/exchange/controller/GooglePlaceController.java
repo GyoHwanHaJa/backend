@@ -1,7 +1,7 @@
 package com.exchangeBE.exchange.controller;
 
 
-import com.exchangeBE.exchange.service.GooglePlacesService;
+import com.exchangeBE.exchange.service.Trip.GooglePlacesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

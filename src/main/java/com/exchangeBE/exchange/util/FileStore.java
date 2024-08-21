@@ -1,7 +1,7 @@
 package com.exchangeBE.exchange.util;
 
-import com.exchangeBE.exchange.entity.UploadFileEntity;
-import com.exchangeBE.exchange.repository.UploadFileRepository;
+import com.exchangeBE.exchange.entity.Trip.UploadFileEntity;
+import com.exchangeBE.exchange.repository.Trip.UploadFileRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

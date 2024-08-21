@@ -1,8 +1,8 @@
 package com.exchangeBE.exchange.controller;
 
 
-import com.exchangeBE.exchange.entity.CountryEntity;
-import com.exchangeBE.exchange.service.CountryService;
+import com.exchangeBE.exchange.entity.Trip.CountryEntity;
+import com.exchangeBE.exchange.service.Trip.CountryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

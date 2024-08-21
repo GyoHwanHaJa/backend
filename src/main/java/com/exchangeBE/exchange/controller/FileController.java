@@ -1,8 +1,8 @@
 package com.exchangeBE.exchange.controller;
 
-import com.exchangeBE.exchange.dto.UploadFile;
-import com.exchangeBE.exchange.entity.UploadFileEntity;
-import com.exchangeBE.exchange.service.UploadFileService;
+import com.exchangeBE.exchange.dto.Trip.UploadFile;
+import com.exchangeBE.exchange.entity.Trip.UploadFileEntity;
+import com.exchangeBE.exchange.service.Trip.UploadFileService;
 import com.exchangeBE.exchange.util.FileStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
