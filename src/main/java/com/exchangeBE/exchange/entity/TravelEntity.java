@@ -71,8 +71,16 @@ public class TravelEntity {
         }
     }
 
-    public List<TravelTagEntity> getTags() {
+    /*public List<TravelTagEntity> getTags() {
         return tags != null ? tags : Collections.emptyList();
+    }*/
+
+
+    // 다른 필드와 메서드...
+
+    public void addTag(TravelTagEntity tag) {
+        this.tags.add(tag);
+        tag.setTravel(this); // 양방향 관계 설정
     }
 
     // Add a method to add a tag

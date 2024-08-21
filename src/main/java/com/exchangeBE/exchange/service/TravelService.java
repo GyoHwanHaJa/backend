@@ -48,7 +48,16 @@ public class TravelService {
         if (travelDto.getTags() != null) {
             for (TravelTagDto tagDto : travelDto.getTags()) {
 
-                travelTagService.createTravelTag(travel.getId(), tagDto);
+                //travelTagService.createTravelTag(travel.getId(), tagDto);
+                TravelTagEntity tagEntity = new TravelTagEntity();
+                tagEntity.setSubject(tagDto.getSubject());
+                tagEntity.setTravelDateStart(tagDto.getTravelDateStart());
+                tagEntity.setTravelDateEnd(tagDto.getTravelDateEnd());
+                tagEntity.setCountryName(tagDto.getCountryName());
+                tagEntity.setPlaceName(tagDto.getPlaceName());
+
+                travel.addTag(tagEntity); // 태그를 TravelEntity에 추가
+                travelTagRepository.save(tagEntity); // 태그를 저장
 
             }
         }
