@@ -63,18 +63,22 @@ public class TravelTagService {
     @Transactional // travelId 에 관한 메서드 필요
     public TravelTagDto createTravelTag(Long travelId, TravelTagDto travelTagDto) {
         // TravelEntity 조회
-        TravelEntity travelPost = travelRepository.findById(travelTagDto.getTravelPostId())
+        /*TravelEntity travelPost = travelRepository.findById(travelTagDto.getTravelPostId())
+                .orElseThrow(() -> new RuntimeException("Travel post not found"));*/
+
+        // 전달된 travelId를 사용하여 TravelEntity 조회
+        TravelEntity travelPost = travelRepository.findById(travelId)
                 .orElseThrow(() -> new RuntimeException("Travel post not found"));
 
         // CountryEntity를 CountryDto로부터 조회하거나 새로 생성
-        CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
+        CountryEntity country = countryRepository.findByName(travelTagDto.getCountryName())
                 .orElseThrow(() -> new RuntimeException("Country not found"));
 
         // PlaceEntity를 PlaceDto로부터 조회하거나 새로 생성
-        PlaceEntity place = placeRepository.findByName(travelTagDto.getPlace().getName())
+        PlaceEntity place = placeRepository.findByName(travelTagDto.getPlaceName())
                 .orElseGet(() -> {
                     PlaceEntity newPlace = new PlaceEntity();
-                    newPlace.setName(travelTagDto.getPlace().getName());
+                    newPlace.setName(travelTagDto.getPlaceName());
                     return placeRepository.save(newPlace);
                 });
 
@@ -99,7 +103,7 @@ public class TravelTagService {
         // TravelTagEntity 생성 및 설정
         TravelTagEntity tagEntity = new TravelTagEntity();
         tagEntity.setTravel(travelPost);
-        tagEntity.setCountry(country);  // Country 설정
+        tagEntity.setCountryName(country.getName());  // Country 설정
         tagEntity.setPlaceName(place.getName());  // Place 설정
         // 주제를 Enum으로 설정
         tagEntity.setSubject(travelTagDto.getSubject());
@@ -123,7 +127,7 @@ public class TravelTagService {
     private TravelTagDto convertToDto(TravelTagEntity tagEntity) {
         TravelTagDto dto = new TravelTagDto();
         dto.setId(tagEntity.getId());
-        dto.setTravelPostId(tagEntity.getTravel().getId());
+        //dto.setTravelPostId(tagEntity.getTravel().getId());
         // 주제를 Enum으로 변환하여 설정
         dto.setSubject(tagEntity.getSubject());
 
@@ -131,17 +135,20 @@ public class TravelTagService {
         dto.setTravelDateEnd(tagEntity.getTravelDateEnd());
 
         // CountryEntity를 CountryDto로 변환하여 설정
-        CountryDto countryDto = new CountryDto();
+        /*CountryDto countryDto = new CountryDto();
         CountryEntity country = tagEntity.getCountry();
         if (country != null) {
             // name 필드만 설정
             countryDto.setName(country.getName());
         }
-        dto.setCountry(countryDto);
+        dto.setCountry(countryDto);*/
+
+        //CountryDto countryDto = new CountryDto(tagEntity.getCountryName());
+        dto.setCountryName(tagEntity.getCountryName());
 
         // PlaceDto를 생성하고 이름만 설정
-        PlaceDto placeDto = new PlaceDto(tagEntity.getPlaceName());
-        dto.setPlace(placeDto);
+        //PlaceDto placeDto = new PlaceDto(tagEntity.getPlaceName());
+        dto.setPlaceName(tagEntity.getPlaceName());
 
 
         return dto;
@@ -160,15 +167,15 @@ public class TravelTagService {
         travelTag.setTravelDateEnd(travelTagDto.getTravelDateEnd());
 
         // CountryEntity를 CountryDto로부터 업데이트
-        CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
+        /*CountryEntity country = countryRepository.findByName(travelTagDto.getCountry().getName())
                 .orElseThrow(() -> new RuntimeException("Country not found"));
-        travelTag.setCountry(country);
+        travelTag.setCountry(country);*/
 
         // PlaceEntity를 PlaceDto로부터 업데이트
-        PlaceEntity place = placeRepository.findByName(travelTagDto.getPlace().getName())
+        PlaceEntity place = placeRepository.findByName(travelTagDto.getPlaceName())
                 .orElseGet(() -> {
                     PlaceEntity newPlace = new PlaceEntity();
-                    newPlace.setName(travelTagDto.getPlace().getName());
+                    newPlace.setName(travelTagDto.getPlaceName());
                     return placeRepository.save(newPlace);
                 });
         travelTag.setPlaceName(place.getName());

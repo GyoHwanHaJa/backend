@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-
+/*
 @Getter
 @Setter
 @ToString
@@ -65,4 +65,4 @@ public class UserEntity {
     public enum MembershipLevel {
         FRESHMAN, SOPHOMORE, JUNIOR
     }
-}
+}*/

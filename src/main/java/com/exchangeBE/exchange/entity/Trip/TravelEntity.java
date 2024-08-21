@@ -22,8 +22,8 @@ public class TravelEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    //@Column(name = "user_id", nullable = false)
+    //private Long userId;
 
     @Column(nullable = false)
     private String title;
@@ -43,8 +43,11 @@ public class TravelEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "travelPost", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TravelTagEntity> tags = new ArrayList<>(); // 필드 초기화
+
+    @OneToMany(mappedBy = "travelPost", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CommentEntity> comments = new ArrayList<>(); // 댓글 리스트
 
     @PrePersist
     protected void onCreate() {
@@ -71,7 +74,28 @@ public class TravelEntity {
         }
     }
 
-    public List<TravelTagEntity> getTags() {
+    /*public List<TravelTagEntity> getTags() {
         return tags != null ? tags : Collections.emptyList();
+    }*/
+
+
+    // 다른 필드와 메서드...
+
+
+    public void addComment(CommentEntity comment) {
+        this.comments.add(comment);
+        comment.setTravelPost(this); // 양방향 관계 설정
     }
+
+
+    public void addTag(TravelTagEntity tag) {
+        this.tags.add(tag);
+        tag.setTravel(this); // 양방향 관계 설정
+    }
+
+    // Add a method to add a tag
+    /*public void addTag(TravelTagEntity tag) {
+        this.tags.add(tag);
+        tag.setTravel(this); // Ensure the bidirectional relationship is maintained
+    }*/
 }

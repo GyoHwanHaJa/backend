@@ -27,7 +27,7 @@ public class CommentEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travel_post_id", nullable = false)
-    private TravelEntity travelPost;
+    private TravelEntity travelPost;  // 필드명이 "travelPost"로 정의되어 있습니다.
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

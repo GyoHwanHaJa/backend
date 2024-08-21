@@ -29,10 +29,11 @@ public class TripReplyController {
         return replyService.findRepliesByCommentId(commentId);
     }
 
-    @PostMapping
-    public ReplyDto createReply(@RequestBody ReplyDto replyDto, @RequestParam Long commentId) {
-        return replyService.saveReply(replyDto, commentId);
+    @PostMapping("/post")
+    public ReplyDto createReply(@RequestBody ReplyDto replyDto) {
+        return replyService.saveReply(replyDto, replyDto.getCommentId());
     }
+
 
     @PutMapping("/{replyId}")
     public ReplyDto updateReply(@PathVariable Long replyId, @RequestBody ReplyDto replyDto) {

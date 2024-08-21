@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class CommentDto {
     private Long id;
     private String content;
-    private Long userId;
-    private Long travelPostId; // 수정된 부분 (tripPostId -> travelPostId)
+    private Long userId;         // 추가된 부분
+    private Long travelPostId;   // 추가된 부분
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
