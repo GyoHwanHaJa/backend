@@ -1,5 +1,8 @@
 package com.exchangeBE.exchange.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Subject {
     COST_EFFECTIVENESS("cost-effectiveness"),
     LOCAL("local"),
@@ -13,7 +16,19 @@ public enum Subject {
         this.displayName = displayName;
     }
 
+    @JsonValue
     public String getDisplayName() {
         return displayName;
+    }
+
+
+    @JsonCreator
+    public static Subject fromDisplayName(String displayName) {
+        for (Subject subject : values()) {
+            if (subject.getDisplayName().equals(displayName)) {
+                return subject;
+            }
+        }
+        throw new IllegalArgumentException("Unknown display name: " + displayName);
     }
 }

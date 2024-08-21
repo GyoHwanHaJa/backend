@@ -22,8 +22,8 @@ public class TravelEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    //@Column(name = "user_id", nullable = false)
+    //private Long userId;
 
     @Column(nullable = false)
     private String title;
@@ -74,4 +74,10 @@ public class TravelEntity {
     public List<TravelTagEntity> getTags() {
         return tags != null ? tags : Collections.emptyList();
     }
+
+    // Add a method to add a tag
+    /*public void addTag(TravelTagEntity tag) {
+        this.tags.add(tag);
+        tag.setTravel(this); // Ensure the bidirectional relationship is maintained
+    }*/
 }

@@ -3,10 +3,10 @@ package com.exchangeBE.exchange.service;
 import com.exchangeBE.exchange.dto.CommentDto;
 import com.exchangeBE.exchange.entity.CommentEntity;
 import com.exchangeBE.exchange.entity.TravelEntity;
-import com.exchangeBE.exchange.entity.UserEntity;
+//import com.exchangeBE.exchange.entity.UserEntity;
 import com.exchangeBE.exchange.repository.CommentRepository;
 import com.exchangeBE.exchange.repository.TravelRepository; // 수정된 부분
-import com.exchangeBE.exchange.repository.UserRepository;
+//import com.exchangeBE.exchange.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +20,15 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    /*@Autowired
+    private UserRepository userRepository;*/
 
     @Autowired
     private TravelRepository travelRepository; // TripPostRepository -> TravelRepository로 수정
 
     public CommentDto saveComment(CommentDto commentDto, Long userId, Long travelPostId) { // 수정된 부분
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+     /*   UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));*/
         TravelEntity travelPost = travelRepository.findById(travelPostId) // 수정된 부분
                 .orElseThrow(() -> new RuntimeException("Travel post not found"));
 
@@ -48,8 +48,8 @@ public class CommentService {
         CommentEntity comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        /*UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));*/
         TravelEntity travelPost = travelRepository.findById(travelPostId) // 수정된 부분
                 .orElseThrow(() -> new RuntimeException("Travel post not found"));
 

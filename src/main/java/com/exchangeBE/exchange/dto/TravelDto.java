@@ -12,7 +12,7 @@ import java.util.List;
 @ToString
 public class TravelDto {
     private Long id;
-    private Long userId;
+    //private Long userId;
     private String title;
     private String content;
     private Integer pageView;
