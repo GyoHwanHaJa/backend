@@ -1,142 +1,265 @@
 package com.exchangeBE.exchange.service.schedule;
 
-import com.exchangeBE.exchange.dto.MainPageDto;
-import com.exchangeBE.exchange.dto.RecurrenceDto;
-import com.exchangeBE.exchange.dto.ScheduleDto;
-import com.exchangeBE.exchange.dto.TagDto;
-import com.exchangeBE.exchange.entity.Schedule.Schedule;
-import com.exchangeBE.exchange.entity.User;
-import com.exchangeBE.exchange.repository.schedule.ScheduleRepository;
-import com.exchangeBE.exchange.repository.schedule.ScheduleTagRepository;
-import com.exchangeBE.exchange.repository.UserRepository;
+import com.exchangeBE.exchange.dto.schedule.RecurrenceCreateDTO;
+import com.exchangeBE.exchange.dto.schedule.ScheduleCreateDTO;
+import com.exchangeBE.exchange.dto.schedule.ScheduleDTO;
+import com.exchangeBE.exchange.entity.Schedule.*;
+import com.exchangeBE.exchange.entity.User.User;
+import com.exchangeBE.exchange.repository.Community.UserRepository;
+import com.exchangeBE.exchange.repository.schedule.*;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class ScheduleService {
-    private final ScheduleRepository scheduleRepository;
-    private final RecurrenceService recurrenceService;
-    private final ScheduleTagService scheduleTagService;
-    private final TagService tagService;
     private final UserRepository userRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final TagRepository tagRepository;
+    private final RecurrenceRepository recurrenceRepository;
+    private final OccasionRepository occasionRepository;
     private final ScheduleTagRepository scheduleTagRepository;
 
-    public ScheduleService(ScheduleRepository scheduleRepository, ScheduleTagService scheduleTagService,
-                           TagService tagService, UserRepository userRepository, RecurrenceService recurrenceService, ScheduleTagRepository scheduleTagRepository) {
-        this.scheduleRepository = scheduleRepository;
-        this.scheduleTagService = scheduleTagService;
-        this.userRepository = userRepository;
-        this.tagService = tagService;
-        this.recurrenceService = recurrenceService;
-        this.scheduleTagRepository = scheduleTagRepository;
-    }
+    @Transactional
+    public Long createOrUpdateSchedule(ScheduleCreateDTO scheduleCreateDto) {
+        Schedule schedule;
 
-    public Set<TagDto> createSchedule(Long userId, ScheduleDto scheduleDto,
-                                      RecurrenceDto recurrenceDto, Set<TagDto> tagDto) {
-        // 받아온 id를 기반으로 유저 검색
-        User user = userRepository.findById(userId)
+        // 제공된 유저 ID로 유저 찾음
+        User user = userRepository.findById(scheduleCreateDto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        // 일정 추가 요청한 유저 설정
-        scheduleDto.setUser(user);
 
-        // recurrenceId 받아옴
-        recurrenceDto = recurrenceService.createRecurrence(recurrenceDto);
-        // 일정의 반복 등록
-        scheduleDto.setRecurrenceDto(recurrenceDto);
-        // schedule dto 저장
-        scheduleDto = ScheduleDto.toScheduleDto(scheduleRepository.save(Schedule.toScheduleEntity(scheduleDto)));
+        if (scheduleCreateDto.getScheduleId() == null) { // 일정 등록
+            schedule = new Schedule();
+            schedule.setUser(user);
+        } else { // 일정 수정
+            schedule = scheduleRepository.findById(scheduleCreateDto.getScheduleId())
+                    .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
 
-
-        // 태그 생성 -> 일정 엔티티와 의존성 X
-
-        for(TagDto tag : tagDto) {
-            tag = tagService.createTag(tag); // 태그 레코드 생성
-            scheduleTagService.createScheduleTag(scheduleDto, tag); // 일정-태그 조인 테이블 레코드 생성
+            // -- 기존 관계 제거 --
+            // 반복 관계 제거
+            if (schedule.getRecurrence() != null) {
+//                Recurrence recurrence = schedule.getRecurrence();
+//                schedule.setRecurrence(null);
+//                recurrenceRepository.delete(recurrence);
+                recurrenceRepository.delete(schedule.getRecurrence());
+                schedule.setRecurrence(null);
+            }
+            // 태그 관계 제거
+            if (schedule.getScheduleTags() != null) {
+                schedule.getScheduleTags().clear();
+                scheduleTagRepository.deleteBySchedule(schedule);
+            }
         }
 
-        return tagDto;
-    }
+        // 일정 객체 새로운 값으로 설정
+        updateScheduleInfo(schedule, scheduleCreateDto);
 
-    public ScheduleDto readSchedule(Long userId) {
-        Schedule schedule = scheduleRepository.findById(userId).get();
-        return ScheduleDto.toScheduleDto(schedule);
-    }
+        // 일정 객체 저장
+        schedule = scheduleRepository.save(schedule);
 
-    public ScheduleDto updateSchedule(Long scheduleId, ScheduleDto scheduleDto, RecurrenceDto recurrenceDto, Set<TagDto> tagDto) {
-
-        Schedule schedule = scheduleRepository.findById(scheduleId).get();
-        //ScheduleDto updateScheduleDto = ScheduleDto.toScheduleDto(schedule);
-        scheduleDto.setId(scheduleId);
-        recurrenceDto.setId(schedule.getRecurrence().getId());
-        recurrenceDto = recurrenceService.updateRecurrence(recurrenceDto);
-
-        scheduleDto.setRecurrenceDto(recurrenceDto);
-        scheduleDto.setId(schedule.getId());
-        scheduleDto.setUser(schedule.getUser());
-        scheduleDto.setScheduleTags(schedule.getScheduleTags());
-
-        scheduleDto = ScheduleDto.toScheduleDto(scheduleRepository.save(Schedule.toScheduleEntity(scheduleDto)));
-
-        for(TagDto tag : tagDto) {
-            tag = tagService.createTag(tag);
-            scheduleTagService.createScheduleTag(scheduleDto, tag);
+        // 반복 설정 되어 있는 경우
+        if (scheduleCreateDto.getRecurrence() != null) {
+            Recurrence recurrence = createRecurrence(scheduleCreateDto.getRecurrence(), schedule);
+            schedule.setRecurrence(recurrence);
         }
 
-        return scheduleDto;
-        //return ScheduleDto.toScheduleDto(scheduleRepository.save(schedule));
+        // 태그 존재할 경우
+        if (scheduleCreateDto.getTagNames() != null && !scheduleCreateDto.getTagNames().isEmpty()) {
+            Set<ScheduleTag> scheduleTags = createScheduleTags(scheduleCreateDto.getTagNames(), schedule);
+            schedule.setScheduleTags(scheduleTags);
+        }
+
+        // 최종 저장
+        schedule = scheduleRepository.save(schedule);
+
+        return schedule.getId();
+    }
+
+    private void updateScheduleInfo(Schedule schedule, ScheduleCreateDTO scheduleCreateDto) {
+        schedule.setScheduleName(scheduleCreateDto.getScheduleName());
+        schedule.setScheduleDescription(scheduleCreateDto.getScheduleDescription());
+        schedule.setStartTime(scheduleCreateDto.getStartTime());
+        schedule.setEndTime(scheduleCreateDto.getEndTime());
     }
 
     public void deleteSchedule(Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).get();
-        scheduleRepository.delete(schedule);
+        scheduleRepository.deleteById(scheduleId);
     }
 
-    public MainPageDto getMainPage(Long userId, Integer year, Integer month, Integer day) {
-        User user = userRepository.findById(userId).get();
-        LocalDateTime now = LocalDateTime.now();
-        Long dDay = ChronoUnit.DAYS.between(now, user.getExchangePeriodEnd()); // 귀국 남은 날짜
 
-        // 보고서 개수
-        Integer count = scheduleRepository.countByUserId(userId);
+    private Recurrence createRecurrence(RecurrenceCreateDTO recurrenceCreateDto, Schedule schedule) {
 
+        Recurrence recurrence = Recurrence.builder()
+                .type(recurrenceCreateDto.getType())
+                .daysOfWeek(recurrenceCreateDto.getDaysOfWeek())
+                .recurrenceInterval(recurrenceCreateDto.getRecurrenceInterval())
+                .build();
 
-        // 해당 월의 일정 날짜
-        List<Schedule> scheduleList = scheduleRepository.findAllByYearAndMonth(year, month);
-        List<Integer> dayList = new ArrayList<>();
+        // 반복 정보 저장
+        recurrence = recurrenceRepository.save(recurrence);
 
-        for (Schedule schedule : scheduleList) {
-            dayList.add(schedule.getStartTime().getDayOfMonth());
-        }
+        // 반복되는 날짜 생성
+        Set<Occasion> occasions = generateOccasions(schedule, recurrence, recurrenceCreateDto.getRecurrenceEndDate());
+        occasions = new HashSet<>(occasionRepository.saveAll(occasions));  // Occasion들을 저장
+        recurrence.setOccasions(occasions);
 
-        // 오늘 일정
-        LocalDate date = LocalDate.of(year, month, day);
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-
-        List <Schedule> todaySchedule = scheduleRepository.findAllByStartTimeBetween(startOfDay, endOfDay);
-        List<String> scheduleNameList = new ArrayList<>();
-        List<LocalDateTime> scheduleTimeList = new ArrayList<>();
-
-        for (Schedule schedule : todaySchedule) {
-            scheduleNameList.add(schedule.getScheduleName());
-            scheduleTimeList.add(schedule.getStartTime());
-        }
-
-        MainPageDto mainPageDto = new MainPageDto();
-        mainPageDto.setScheduleNameList(scheduleNameList);
-        mainPageDto.setScheduleTimeList(scheduleTimeList);
-        mainPageDto.setDayList(dayList);
-        mainPageDto.setDDay(dDay);
-        mainPageDto.setCount(count);
-
-        return mainPageDto;
+        return recurrenceRepository.save(recurrence);  // 업데이트된 Recurrence를 다시 저장
     }
+
+
+
+    private boolean isOccasionDay(ZonedDateTime date, Recurrence recurrence) {
+        switch (recurrence.getType()) {
+            case DAILY:
+                return true;
+            case WEEKLY:
+                return recurrence.getDaysOfWeek().contains(date.getDayOfWeek());
+            case MONTHLY:
+                return date.getDayOfMonth() == recurrence.getRecurrenceInterval();
+            case YEARLY:
+                // Assuming the first value in daysOfWeek represents the month (1-12)
+                int month = recurrence.getDaysOfWeek().iterator().next().getValue();
+                return date.getMonthValue() == month &&
+                        date.getDayOfMonth() == recurrence.getRecurrenceInterval();
+            default:
+                return false;
+        }
+    }
+
+    private Set<Occasion> generateOccasions(Schedule schedule, Recurrence recurrence, ZonedDateTime endDate) {
+        Set<Occasion> occasions = new HashSet<>();
+        ZonedDateTime recurrenceStart = schedule.getStartTime();
+        ZonedDateTime oneMonthLater = recurrenceStart.plusMonths(1);
+
+        // endDate가 한 달 후보다 더 나중이라면 한 달 후로 제한
+        ZonedDateTime effectiveEndDate = endDate.isAfter(oneMonthLater) ? oneMonthLater : endDate;
+
+        System.out.println("Generating occasions from " + recurrenceStart + " to " + effectiveEndDate);
+
+        while (recurrenceStart.isBefore(effectiveEndDate) || recurrenceStart.isEqual(effectiveEndDate)) {
+            System.out.println("Checking date: " + recurrenceStart.toLocalDate());
+
+            boolean isOccasionDay = isOccasionDay(recurrenceStart, recurrence);
+            System.out.println("Is occasion day: " + isOccasionDay);
+
+            if (isOccasionDay) {
+                // 일정의 duration 계산
+                Duration scheduleDuration = Duration.between(schedule.getStartTime(), schedule.getEndTime());
+
+                // 현재 반복 일정의 종료 시간 계산
+                ZonedDateTime occasionEndTime = recurrenceStart.plus(scheduleDuration);
+
+                Occasion occasion = Occasion.builder()
+                        .recurrence(recurrence)
+                        .startTime(recurrenceStart)
+                        .endTime(occasionEndTime)
+                        .build();
+
+                boolean added = occasions.add(occasion);
+                System.out.println("Occasion added: " + added + ", Occasion: " + occasion);
+            }
+
+            // 다음 반복 시작일로 이동
+            recurrenceStart = getNextRecurrenceStart(recurrenceStart, recurrence);
+
+            System.out.println("Next recurrence start: " + recurrenceStart);
+        }
+
+        System.out.println("Generated " + occasions.size() + " occasions");
+        return occasions;
+    }
+
+    private ZonedDateTime getNextRecurrenceStart(ZonedDateTime current, Recurrence recurrence) {
+        switch (recurrence.getType()) {
+            case DAILY:
+                return current.plusDays(recurrence.getRecurrenceInterval());
+            case WEEKLY:
+                return current.plusWeeks(recurrence.getRecurrenceInterval());
+            case MONTHLY:
+                return current.plusMonths(recurrence.getRecurrenceInterval());
+            case YEARLY:
+                return current.plusYears(recurrence.getRecurrenceInterval());
+            default:
+                throw new IllegalArgumentException("Unknown recurrence type");
+        }
+    }
+
+    private Set<ScheduleTag> createScheduleTags(Set<String> tagNames, Schedule schedule) {
+        Set<ScheduleTag> scheduleTags = new HashSet<>();
+
+        for (String tagName : tagNames) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
+
+            ScheduleTag scheduleTag = ScheduleTag.builder()
+                    .tag(tag)
+                    .schedule(schedule)
+                    .build();
+
+            scheduleTag = scheduleTagRepository.save(scheduleTag);
+            scheduleTags.add(scheduleTag);
+        }
+
+        return scheduleTags;
+    }
+
+    public Schedule getScheduleById(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
+    }
+
+//    public List<Schedule> getSchedulesByUserId(Long userId) {
+//        return scheduleRepository.findByUserId(userId);
+//    }
+//
+//    public List<Schedule> getSchedulesByDateRange(Long userId, ZonedDateTime startDate, ZonedDateTime endDate) {
+//        return scheduleRepository.findByUserIdAndStartTimeBetween(userId, startDate, endDate);
+//    }
+
+    public ScheduleDTO toScheduleDto(Schedule schedule) {
+        ScheduleDTO dto = new ScheduleDTO();
+        dto.setId(schedule.getId());
+        dto.setScheduleName(schedule.getScheduleName());
+        dto.setScheduleDescription(schedule.getScheduleDescription());
+        dto.setStartTime(schedule.getStartTime());
+        dto.setEndTime(schedule.getEndTime());
+
+        dto.setTagNames(schedule.getScheduleTags().stream()
+                .map(st -> st.getTag().getName())
+                .collect(Collectors.toSet()));
+
+        if (schedule.getRecurrence() != null) {
+            ScheduleDTO.RecurrenceDTO recurrenceDTO = new ScheduleDTO.RecurrenceDTO();
+            recurrenceDTO.setType(schedule.getRecurrence().getType());
+            recurrenceDTO.setDaysOfWeek(schedule.getRecurrence().getDaysOfWeek());
+            recurrenceDTO.setRecurrenceInterval(schedule.getRecurrence().getRecurrenceInterval());
+            dto.setRecurrence(recurrenceDTO);
+        }
+
+        return dto;
+    }
+
+    public ScheduleDTO getScheduleDTOById(Long scheduleId) {
+        Schedule schedule = getScheduleById(scheduleId);
+        return toScheduleDto(schedule);
+    }
+
+//    public List<ScheduleDTO> getScheduleDTOsByUserId(Long userId) {
+//        List<Schedule> schedules = getSchedulesByUserId(userId);
+//        return schedules.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
+//
+//    public List<ScheduleDTO> getScheduleDTOsByDateRange(Long userId, ZonedDateTime startDate, ZonedDateTime endDate) {
+//        List<Schedule> schedules = getSchedulesByDateRange(userId, startDate, endDate);
+//        return schedules.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
 }

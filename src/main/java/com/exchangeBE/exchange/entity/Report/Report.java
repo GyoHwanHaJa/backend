@@ -1,6 +1,6 @@
 package com.exchangeBE.exchange.entity.Report;
 
-import com.exchangeBE.exchange.entity.User;
+import com.exchangeBE.exchange.entity.User.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,13 +22,15 @@ public class Report {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private ReportType type; // 생활, 중간, 마감
+    private ReportType reportType;
 
-    // 보고서는 여러 개의 단계로 구성된다.
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
-    private List<Stage> stages = new ArrayList<>();
+    private String title;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReportStage> reportStages = new ArrayList<>();
 }

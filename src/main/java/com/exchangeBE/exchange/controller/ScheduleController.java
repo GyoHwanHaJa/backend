@@ -1,93 +1,105 @@
 package com.exchangeBE.exchange.controller;
 
-import com.exchangeBE.exchange.DynamicResponseBuilder;
-import com.exchangeBE.exchange.dto.*;
+import com.exchangeBE.exchange.dto.schedule.ScheduleCreateDTO;
+import com.exchangeBE.exchange.dto.schedule.ScheduleDTO;
+import com.exchangeBE.exchange.entity.Schedule.Schedule;
+
 import com.exchangeBE.exchange.service.schedule.ScheduleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
-@RequestMapping("/api/schedule")
-@Tag(name = "안녕", description = "하세요")
+@RequiredArgsConstructor
+@RequestMapping("/api/schedules")
+@Tag(name = "일정", description = "여행 기록 일정 관리 API")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    public ScheduleController(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
-    }
-
-    /* 여행 기록 */
-    @GetMapping("/history/{userId}")
-    @ResponseBody
-    public ResponseEntity<?> getMainPage(@PathVariable Long userId,
-                                         @RequestBody MainPageRequestDto mainPageRequestDto) {
-        Integer year = mainPageRequestDto.getYear();
-        Integer month = mainPageRequestDto.getMonth();
-        Integer day = mainPageRequestDto.getDay();
-
-        MainPageDto mainPageDto = scheduleService.getMainPage(userId, year, month, day);
-        return ResponseEntity.status(HttpStatus.OK).body(mainPageDto);
-    }
-
-    /* 일정 단 건 조회 */
-    @GetMapping("/{userId}")
-    @ResponseBody
-    public ResponseEntity<?> getSchedule(@PathVariable Long userId) {
+    @PostMapping
+    @Operation(summary = "새 일정 생성",
+            description = "제공된 데이터를 기반으로 새 일정을 생성합니다",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "일정이 성공적으로 생성됨",
+                            content = @Content(schema = @Schema(implementation = Schedule.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 입력")
+            })
+    public ResponseEntity createSchedule(@RequestBody ScheduleCreateDTO dto) {
         try {
-            ScheduleDto scheduleDto = scheduleService.readSchedule(userId);
+            Long scheduleId = scheduleService.createOrUpdateSchedule(dto);
 
-            if (scheduleDto == null) {
-                return ResponseEntity.notFound().build();
-            }
-
-            Map<String, Object> response = DynamicResponseBuilder.buildResponse(
-                    "scheduleName", scheduleDto.getScheduleName(),
-                    "scheduleDescription", scheduleDto.getScheduleDescription(),
-                    "startTime", scheduleDto.getStartTime(),
-                    "endTime", scheduleDto.getEndTime()
-            );
-
-            return ResponseEntity.ok(response);
+            Map<String, Long> response = new HashMap<>();
+            response.put("scheduleId", scheduleId);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("에러가 발생했습니다: " + e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "일정 생성에 실패했습니다.");
+            errorResponse.put("message", e.getMessage());
+
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /* 일정 추가 */
-    @PostMapping("/{userId}")
-    @ResponseBody
-    public ResponseEntity<?> createSchedule(@PathVariable Long userId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
-
-        ScheduleDto scheduleDto = scheduleRequestDto.getScheduleDto();
-        RecurrenceDto recurrenceDto = scheduleRequestDto.getRecurrenceDto();
-        Set<TagDto> tagDto = scheduleRequestDto.getTagDto();
-
-
-        scheduleService.createSchedule(userId, scheduleDto, recurrenceDto, tagDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    /* 일정 수정 */
     @PutMapping("/{scheduleId}")
-    public ResponseEntity<?> updateSchedule(@PathVariable Long scheduleId, @RequestBody ScheduleRequestDto scheduleRequestDto) {
-        ScheduleDto scheduleDto = scheduleRequestDto.getScheduleDto();
-        RecurrenceDto recurrenceDto = scheduleRequestDto.getRecurrenceDto();
-        Set<TagDto> tagDto = scheduleRequestDto.getTagDto();
+    @Operation(summary = "기존 일정 수정",
+            description = "지정된 ID의 일정을 수정합니다",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "일정이 성공적으로 수정됨",
+                            content = @Content(schema = @Schema(implementation = Schedule.class))),
+                    @ApiResponse(responseCode = "404", description = "일정을 찾을 수 없음")
+            })
+    public ResponseEntity updateSchedule(
+            @RequestBody ScheduleCreateDTO dto,
+            @Parameter(description = "수정할 일정의 ID") @PathVariable Long scheduleId) {
+        try {
+            dto.setScheduleId(scheduleId);
+            scheduleId = scheduleService.createOrUpdateSchedule(dto);
 
-        ScheduleDto updatedScheduleDto = scheduleService.updateSchedule(scheduleId, scheduleDto, recurrenceDto, tagDto);
+            Map<String, Long> response = new HashMap<>();
+            response.put("scheduleId", scheduleId);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "일정 수정에 실패했습니다.");
+            errorResponse.put("message", e.getMessage());
 
-        return ResponseEntity.ok(updatedScheduleDto);
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /* 일정 삭제 */
     @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<?> deleteSchedule(@PathVariable Long scheduleId) {
+    @Operation(summary = "일정 삭제",
+            description = "지정된 ID의 일정을 삭제합니다",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "일정이 성공적으로 삭제됨"),
+                    @ApiResponse(responseCode = "404", description = "일정을 찾을 수 없음")
+            })
+    public void deleteSchedule(
+            @Parameter(description = "삭제할 일정의 ID") @PathVariable Long scheduleId) {
         scheduleService.deleteSchedule(scheduleId);
-        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{scheduleId}")
+    @Operation(summary = "ID로 일정 조회",
+            description = "지정된 ID의 일정을 조회합니다",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공적인 조회",
+                            content = @Content(schema = @Schema(implementation = ScheduleDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "일정을 찾을 수 없음")
+            })
+    public ResponseEntity<ScheduleDTO> getScheduleById(
+            @Parameter(description = "조회할 일정의 ID") @PathVariable Long scheduleId) {
+        ScheduleDTO scheduleDTO = scheduleService.getScheduleDTOById(scheduleId);
+        return ResponseEntity.ok(scheduleDTO);
     }
 }

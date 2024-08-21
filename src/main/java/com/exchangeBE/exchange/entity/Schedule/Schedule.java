@@ -1,50 +1,45 @@
 package com.exchangeBE.exchange.entity.Schedule;
 
-import com.exchangeBE.exchange.dto.ScheduleDto;
-import com.exchangeBE.exchange.entity.User;
+import com.exchangeBE.exchange.entity.User.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@ToString(exclude = {"user", "scheduleTags", "recurrence"})
+@EqualsAndHashCode(of = "id")
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @NotBlank
+    @Size(max = 255)
     private String scheduleName;
+
+    @Size(max = 1000)
     private String scheduleDescription;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)//, orphanRemoval = true)
-    private Set<ScheduleTag> scheduleTags;
+    @NotNull
+    private ZonedDateTime startTime;
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    @NotNull
+    private ZonedDateTime endTime;
+
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ScheduleTag> scheduleTags = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "recurrence_id", referencedColumnName = "id")
     private Recurrence recurrence;
-
-    public static Schedule toScheduleEntity(ScheduleDto scheduleDto) {
-        Schedule schedule = new Schedule();
-
-        schedule.setId(scheduleDto.getId());
-        schedule.setUser(scheduleDto.getUser());
-        schedule.setScheduleName(scheduleDto.getScheduleName());
-        schedule.setScheduleDescription(scheduleDto.getScheduleDescription());
-        schedule.setStartTime(scheduleDto.getStartTime());
-        schedule.setEndTime(scheduleDto.getEndTime());
-        schedule.setRecurrence(Recurrence.toRecurrenceEntity(scheduleDto.getRecurrenceDto()));
-        schedule.setScheduleTags(scheduleDto.getScheduleTags());
-
-        return schedule;
-    }
 }
