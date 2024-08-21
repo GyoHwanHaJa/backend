@@ -1,11 +1,11 @@
-package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service.Trip;
 
-import com.exchangeBE.exchange.dto.CommentDto;
-import com.exchangeBE.exchange.entity.CommentEntity;
-import com.exchangeBE.exchange.entity.TravelEntity;
+import com.exchangeBE.exchange.dto.Trip.CommentDto;
+import com.exchangeBE.exchange.entity.Trip.CommentEntity;
+import com.exchangeBE.exchange.entity.Trip.TravelEntity;
 //import com.exchangeBE.exchange.entity.UserEntity;
-import com.exchangeBE.exchange.repository.CommentRepository;
-import com.exchangeBE.exchange.repository.TravelRepository; // 수정된 부분
+import com.exchangeBE.exchange.repository.Trip.CommentRepository;
+import com.exchangeBE.exchange.repository.Trip.TravelRepository; // 수정된 부분
 //import com.exchangeBE.exchange.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

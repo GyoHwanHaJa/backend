@@ -1,16 +1,12 @@
-package com.exchangeBE.exchange.service;
+package com.exchangeBE.exchange.service.Trip;
 
 import com.exchangeBE.exchange.controller.TravelTagController;
-import com.exchangeBE.exchange.dto.CountryDto;
-import com.exchangeBE.exchange.dto.PlaceDto;
-import com.exchangeBE.exchange.dto.TravelDto;
-import com.exchangeBE.exchange.dto.TravelTagDto;
-import com.exchangeBE.exchange.entity.CountryEntity;
-import com.exchangeBE.exchange.entity.TravelEntity;
-import com.exchangeBE.exchange.entity.TravelTagEntity;
-import com.exchangeBE.exchange.repository.TravelRepository;
-import com.exchangeBE.exchange.repository.TravelTagRepository;
-import jakarta.transaction.Transactional;
+import com.exchangeBE.exchange.dto.Trip.TravelDto;
+import com.exchangeBE.exchange.dto.Trip.TravelTagDto;
+import com.exchangeBE.exchange.entity.Trip.TravelEntity;
+import com.exchangeBE.exchange.entity.Trip.TravelTagEntity;
+import com.exchangeBE.exchange.repository.Trip.TravelRepository;
+import com.exchangeBE.exchange.repository.Trip.TravelTagRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
