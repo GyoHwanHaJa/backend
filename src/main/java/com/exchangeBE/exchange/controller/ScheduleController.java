@@ -1,7 +1,6 @@
 package com.exchangeBE.exchange.controller;
 
-import com.exchangeBE.exchange.dto.schedule.ScheduleCreateDTO;
-import com.exchangeBE.exchange.dto.schedule.ScheduleDTO;
+import com.exchangeBE.exchange.dto.schedule.*;
 import com.exchangeBE.exchange.entity.Schedule.Schedule;
 
 import com.exchangeBE.exchange.service.schedule.ScheduleService;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,6 +25,36 @@ import java.util.Map;
 @Tag(name = "일정", description = "여행 기록 일정 관리 API")
 public class ScheduleController {
     private final ScheduleService scheduleService;
+
+    @GetMapping("/return/{userId}")
+    @Operation(summary = "귀국 D-day 조회", description = "특정 사용자의 귀국까지 남을 일 수를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(hidden = true)))
+    public ResponseEntity getLeftDays(@PathVariable Long userId) {
+        Long leftDays = scheduleService.getLeftDays(userId);
+
+        Map<String, Long> response = new HashMap<>();
+        response.put("leftDays", leftDays);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/date")
+    @Operation(summary = "특정 날짜의 일정 조회", description = "특정 날짜의 하루 일정을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "조회 실패", content = @Content(schema = @Schema(hidden = true)))
+    public ResponseEntity getDateSchedules(@RequestBody DateScheduleRequestDto dateScheduleRequestDto) {
+        List<ScheduleInfoDto> scheduleInfo = scheduleService.getDateSchedules(dateScheduleRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleInfo);
+    }
+
+    @PostMapping("/record")
+    public ResponseEntity getRecord(@RequestBody RecordRequestDto recordRequestDto) {
+        RecordResponseDto recordResponseDto = scheduleService.getRecord(recordRequestDto);
+
+        return new ResponseEntity(recordResponseDto, HttpStatus.OK);
+    }
 
     @PostMapping
     @Operation(summary = "새 일정 생성",
