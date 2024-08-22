@@ -305,13 +305,41 @@ public class ScheduleService {
 
     }
 
-//    public List<ScheduleDTO> getScheduleDTOsByUserId(Long userId) {
-//        List<Schedule> schedules = getSchedulesByUserId(userId);
-//        return schedules.stream().map(this::convertToDTO).collect(Collectors.toList());
-//    }
-//
-//    public List<ScheduleDTO> getScheduleDTOsByDateRange(Long userId, ZonedDateTime startDate, ZonedDateTime endDate) {
-//        List<Schedule> schedules = getSchedulesByDateRange(userId, startDate, endDate);
-//        return schedules.stream().map(this::convertToDTO).collect(Collectors.toList());
-//    }
+    public Long getLeftDays(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new com.exchangeBE.exchange.exception.EntityNotFoundException("ID가 " + userId + "인 사용자를 찾을 수 없습니다."));
+
+        LocalDate today = LocalDate.now();
+        LocalDate returnDate = user.getExchangePeriodEnd().toLocalDate();
+
+        Long leftDays = ChronoUnit.DAYS.between(today, returnDate);
+
+        return leftDays;
+    }
+
+    public List<ScheduleInfoDto> getDateSchedules(DateScheduleRequestDto dateScheduleRequestDto) {
+        User user = userRepository.findById(dateScheduleRequestDto.getUserId())
+                .orElseThrow(() -> new com.exchangeBE.exchange.exception.EntityNotFoundException("ID가 " + dateScheduleRequestDto.getUserId() + "인 사용자를 찾을 수 없습니다."));
+
+        LocalDate date = dateScheduleRequestDto.getDate();
+
+        // 요청 날짜의 일정
+        ZonedDateTime startOfDay = date.atStartOfDay(ZoneOffset.UTC);
+        ZonedDateTime endOfDay = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).minusNanos(1);
+
+        List<Schedule> dateScheduleList = scheduleRepository.findByUserIdAndStartTimeBetween(user.getId(), startOfDay, endOfDay);
+        List<ScheduleInfoDto> scheduleInfo = new ArrayList<>();
+        // 일정명과 시간 -> dto로 묶어야 하고
+        for (Schedule schedule : dateScheduleList) {
+            ScheduleInfoDto scheduleInfoDto = new ScheduleInfoDto();
+
+            scheduleInfoDto.setScheduleName(schedule.getScheduleName());
+            scheduleInfoDto.setHour(schedule.getStartTime().getHour());
+            scheduleInfoDto.setMinute(schedule.getStartTime().getMinute());
+
+            scheduleInfo.add(scheduleInfoDto);
+        }
+
+        return scheduleInfo;
+    }
 }

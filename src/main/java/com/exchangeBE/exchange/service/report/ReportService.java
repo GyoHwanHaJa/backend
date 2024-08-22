@@ -190,4 +190,13 @@ public class ReportService {
     public void deleteStage(Long reportId) {
         reportRepository.deleteById(reportId);
     }
+
+    public Integer countReports(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("ID가 " + userId + "인 사용자를 찾을 수 없습니다."));
+
+        List<Report> reportList = reportRepository.findByUser(user);
+
+        return reportList.size();
+    }
 }

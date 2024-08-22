@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,20 @@ import java.util.Map;
 @Tag(name = "보고서", description = "여행 기록 보고서 API")
 public class ReportController {
     private final ReportService reportService;
+
+    @GetMapping("/count/{userId}")
+    @Operation(summary = "보고서 개수 조회", description = "특정 사용자의 보고서 개수를 조회힙나디.")
+    @ApiResponse(responseCode = "200", description = "보고서 개수 조회 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "보고서 개수 조회 실패", content = @Content(schema = @Schema(hidden = true)))
+    public ResponseEntity countReports(@PathVariable Long userId) {
+        Integer count = reportService.countReports(userId);
+
+        Map<String, Integer> response = new HashMap<>();
+        response.put("reportCount", count);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    }
 
     @PostMapping("/{userId}")
     @Operation(summary = "보고서 생성", description = "새로운 보고서를 생성합니다.")
