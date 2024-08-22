@@ -120,6 +120,9 @@ public class ReportController {
     }
 
     @PatchMapping("/name")
+    @Operation(summary = "보고서 이름 설정", description = "특정 보고서의 이름을 설정합니다.")
+    @ApiResponse(responseCode = "200", description = "보고서 이름 설정 성공", content = @Content(schema = @Schema(hidden = true)))
+    @ApiResponse(responseCode = "404", description = "보고서 이름 설정 실패", content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity setReportName(@RequestBody ReportTitleDto reportTitleDto) {
         Report report = reportService.setReportName(reportTitleDto);
 
@@ -132,6 +135,7 @@ public class ReportController {
     }
 
     @DeleteMapping("/report/{reportId}")
+    @Operation(summary = "보고서 삭제", description = "특정 보고서를 삭제합니다.")
     public void deleteStage(@PathVariable Long reportId) {
         reportService.deleteStage(reportId);
     }
