@@ -139,4 +139,11 @@ public class ReportController {
     public void deleteStage(@PathVariable Long reportId) {
         reportService.deleteStage(reportId);
     }
+
+    @PostMapping("type")
+    public ResponseEntity getReportByType(@RequestBody UserReportTypeRequestDto userReportTypeRequestDto) {
+        List<UserReportTypeResponseDto> userReportTypeResponseDtoList = reportService.getReportByType(userReportTypeRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userReportTypeResponseDtoList);
+    }
 }

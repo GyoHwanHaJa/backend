@@ -208,4 +208,26 @@ public class ReportService {
 
         return reportRepository.save(report);
     }
+
+    public List<UserReportTypeResponseDto> getReportByType(UserReportTypeRequestDto userReportTypeRequestDto) {
+        User user = userRepository.findById(userReportTypeRequestDto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("ID가 " + userReportTypeRequestDto.getUserId() + "인 사용자를 찾을 수 없습니다."));
+
+        List<Report> reportList = reportRepository.findByUserAndReportType(user, userReportTypeRequestDto.getReportType());
+
+        List<UserReportTypeResponseDto> userReportTypeResponseDtoList = new ArrayList<>();
+
+        for (Report report : reportList) {
+            UserReportTypeResponseDto userReportTypeResponseDto = new UserReportTypeResponseDto();
+            userReportTypeResponseDto.setReportId(report.getId());
+            userReportTypeResponseDto.setReportTitle(report.getTitle());
+            userReportTypeResponseDto.setCreatedDate(report.getCreatedAt().toLocalDate());
+
+            userReportTypeResponseDtoList.add(userReportTypeResponseDto);
+        }
+
+        return userReportTypeResponseDtoList;
+
+
+    }
 }
