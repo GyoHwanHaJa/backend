@@ -1,9 +1,6 @@
 package com.exchangeBE.exchange.controller;
 
-import com.exchangeBE.exchange.dto.report.ReportTypeDto;
-import com.exchangeBE.exchange.dto.report.StageDto;
-import com.exchangeBE.exchange.dto.report.StageRequestDto;
-import com.exchangeBE.exchange.dto.report.StageResponseDto;
+import com.exchangeBE.exchange.dto.report.*;
 import com.exchangeBE.exchange.entity.Report.Report;
 import com.exchangeBE.exchange.entity.Report.ReportStage;
 import com.exchangeBE.exchange.service.report.ReportService;
@@ -11,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -121,6 +117,18 @@ public class ReportController {
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PatchMapping("/name")
+    public ResponseEntity setReportName(@RequestBody ReportTitleDto reportTitleDto) {
+        Report report = reportService.setReportName(reportTitleDto);
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("reportId", report.getId());
+        response.put("reportTitle", report.getTitle());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/report/{reportId}")

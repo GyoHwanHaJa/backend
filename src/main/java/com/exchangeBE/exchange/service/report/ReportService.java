@@ -199,4 +199,13 @@ public class ReportService {
 
         return reportList.size();
     }
+
+    public Report setReportName(ReportTitleDto reportTitleDto) {
+        Report report = reportRepository.findById(reportTitleDto.getReportId())
+                .orElseThrow(() -> new EntityNotFoundException("ID가 " + reportTitleDto.getReportId() + "인 보고서를 찾을 수 없습니다."));
+
+        report.setTitle(reportTitleDto.getReportTitle());
+
+        return reportRepository.save(report);
+    }
 }
