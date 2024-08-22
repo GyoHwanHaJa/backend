@@ -140,7 +140,7 @@ public class ReportController {
         reportService.deleteStage(reportId);
     }
 
-    @PostMapping("type")
+    @PostMapping("/type")
     public ResponseEntity getReportByType(@RequestBody UserReportTypeRequestDto userReportTypeRequestDto) {
         List<UserReportTypeResponseDto> userReportTypeResponseDtoList = reportService.getReportByType(userReportTypeRequestDto);
 
